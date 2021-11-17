@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+        <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
+        <title>KEY - Record New Song</title>
+    </head>
+    <body>
+        <nav>
+            <!--Use Flask/Jinja make the url references-->
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('song_select') }}">Songlist</a>
+            <a href="{{ url_for('new_song') }}" id="currentPage">New Song</a>
+        </nav>
+        <header>
+            <h1>KEY</h1>
+            <h2>Your personal music tutor.</h2>
+        </header>
+
+
+    </body>
+</html>

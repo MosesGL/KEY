@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+     <title>KEY Homepage</title>
+    </head>
+    <body>
+        <nav>
+            <!--Use Flask/Jinja make the url references-->
+            <a href="{{ url_for('home') }}" id="currentPage">Home</a>
+            <a href="{{ url_for('song_select') }}">Songlist</a>
+            <a href="{{ url_for('new_song') }}">New Song</a>
+        </nav>
+        <header>
+            <h1>KEY</h1>
+            <h2>Your personal music tutor.</h2>
+            <!--interactable piano header?-->
+        </header>
+        <ul>
+            <li><a href="{{ url_for('song_select') }}">Select Song</a></li>
+            <li><a href="{{ url_for('new_song') }}">Record New Song</a></li>
+        </ul>
+    </body>
+</html>

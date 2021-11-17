@@ -1,0 +1,27 @@
+[
+    {
+        "title":"C Scale",
+        "description": "i",
+        "notes":["A","B","C","D","E","F","G","F","E","D","C","B","A"]
+    },
+    {
+        "title":"Hot Cross Buns",
+        "description": "i",
+        "notes":["E","D","C","E","D","C","C","C","C","C","D","D","D","D","E","D","C"]
+    },
+    {
+        "title":"Mary Had a Little Lamb",
+        "description": "i",
+        "notes":["E","D","C","D","E","E","E","D","D","D","E","G","G","E","D","C","D","E","E","E","D","D","E","D","C"]
+    },
+    {
+        "title":"Yankee Doodle",
+        "description": "i",
+        "notes":["C","C","D","E","C","E","D","C","C","D","E","D","C"]
+    },
+    {
+        "title":"Jingle Bells",
+        "description": "i",
+        "notes":["C","C","C","C","C","C","C","E","C","A","B","C"]
+    }
+]

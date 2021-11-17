@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+        <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
+        <!--JAVASCRIPT/JQUERY/AJAX-->
+        <script>
+            // Get default url for song display from Flask/Jinja
+            var songDisplayURL = "{{ url_for('song_display') }}";
+            // Get JSON data with song info
+            var songDataURL = "../static/songs.json";
+            // When document is loaded
+            $(document).ready(function() {
+                // Fetch JSON data in readable format
+                $.getJSON(songDataURL, function (songData) {
+                    // Add a link for each song
+                    $.map(songData, function(post, i) {
+                        // Add Song name to list as link (?songID=i gives song number to song_display)
+                        $('#songlist').append('<li><a href="' + songDisplayURL + '?songID=' + i + '">'+songData[i].title+'</a></li>');
+                    });
+                });
+            });
+        </script>
+        <!--END JAVASCRIPT/JQUERY/AJAX-->
+        <title>KEY - Song Selection</title>
+    </head>
+    <body>
+        <nav>
+            <!--Use Flask/Jinja make the url references-->
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('song_select') }}" id="currentPage">Songlist</a>
+            <a href="{{ url_for('new_song') }}">New Song</a>
+        </nav>
+        <header>
+            <h1>KEY</h1>
+            <h2>Your personal music tutor.</h2>
+        </header>
+        <ul id="songlist">
+        </ul>
+    </body>
+</html>

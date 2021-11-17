@@ -1,0 +1,43 @@
+html {
+    --note-box-size: 60px;
+    --note-box-padding: 15px;
+    --note-box-size-total: calc(var(--note-box-size) + (2 * var(--note-box-padding)));
+}
+
+h1 {
+    padding: 15px;
+    font-size: 50px;
+}
+
+.note-container {
+    /*
+    Automatically adjust note container's height to be sum of
+     - Top + bottom padding (2 * padding)
+     - Note box size
+     */
+    height: var(--note-box-size-total);
+
+    background-color: #abc;
+
+    overflow-y:hidden;
+}
+
+.note-container > li {
+    list-style-type: none;
+    align-items: flex-start;
+
+    display: inline-block;
+    width: var(--note-box-size);
+    height: var(--note-box-size);
+    padding: var(--note-box-padding);
+    margin: 0;
+
+    font-size: 2.75em;
+    font-weight: 700;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+}
+
+.current {
+    background-color: mediumseagreen;
+}
