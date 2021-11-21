@@ -5,6 +5,8 @@ var song;
 var notes;
 // Store id value of current note
 var currentNoteID;
+// Interval called upon to play/pause the song
+var songInterval;
 
 // Edit HTML elements only once page is loaded
 $(document).ready(function() {
@@ -85,11 +87,20 @@ $(document).ready(function() {
         }
     });
 
-    // Start looking for keyboard input by triggering socketio event
+    // Play / Pause song
     $('#start-btn').click(function() {
-        // Initialize socket
-        //var socket = io.connect("http://127.0.0.1:5000");
-        //socket.emit('get_next_note', {data: currentNoteID});
+        // If song is not playing
+        if (songInterval == undefined) {
+            $('#start-btn').text('Pause');
+            // Start playing song AFTER 1 second
+            setTimeout(function() {
+                moveNoteForward();
+                // Move note forward every second
+                songInterval = setInterval(moveNoteForward, 1000);
+            }, 1000);
+        } else {
+            pauseSong();
+        }
     })
 
     // Start song over by reloading page
@@ -97,11 +108,25 @@ $(document).ready(function() {
         location.reload();
     })
 
-    //WHEN CORRECT NOTE IS PLAYED, moveNoteForward()
+    // Pause song function
+    function pauseSong() {
+        $('#start-btn').text('Play');
+        // Stop function calling
+        clearInterval(songInterval);
+        // Reset songInterval variable
+        songInterval = undefined;
+    }
 
+    //WHEN CORRECT NOTE IS PLAYED, moveNoteForward()
     function moveNoteForward() {
-        if ($('.note-container > li').length == prevNoteCount + 1) { return; }
-        currentNoteID = parseInt($('.current').attr('id'));
+        console.log(currentNoteID+1);
+        // If next current note is not valid, autopause the song
+        //  - ~~~.length = final note's ID
+        //  - currentNoteID + 1 = ID of next current note
+        if ($('.note-container > li').length == currentNoteID + 1) {
+            pauseSong();
+            return;
+        }
         // Remove current note
         $('.current').css('background','#abc');
         $('.current').removeClass('current');
