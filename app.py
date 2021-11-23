@@ -1,32 +1,33 @@
 from flask import Flask, render_template, request, url_for
 import mido
 from song import Song
-from flask_socketio import SocketIO
+import json
 
 # Define app
 app = Flask(__name__)
-# Create a socket for transmitting data later
-socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Event listener for socket
-@socketio.on("get_next_note")
 def get_next_note(note):
-	print('hhhhh')
-	print(note['value'])
 	# Create a midi reader
 	with mido.open_input() as inport:
 		for msg in inport:
 			# If key is fully pressed
-			# - channel==0 because input comes in through two channels
+			# - if note pressed matches sought for note
 			# - velocity!=0 prevents ghost notes
-			if (msg.type=='note_on' and msg.channel==0 and msg.velocity!=0):
-				print(str(msg.note) + ", " + str(msg.time))
+			if (msg.type=='note_on' and msg.velocity!=0):
+				# CONVERT NOTE NUMBER TO LETTER
+				
+				# COMPARE PRESSED NOTE TO SOUGHT FOR NOTE
+				if (msg.note == note):
+					return True
 
-# Event listener for socket
-@socketio.on("note_press")
-def update():
-	print('worked')
-	return render_template('home.html')
+@app.route('/getNotes', methods=['GET'])
+def getNotes():
+    data = ['E','C','G','D']
+	# TAKE IN (POST) CURRENT NOTE VARIABLE
+
+	# GET_NEXT_NOTE(note)
+
+    return json.dumps(data)
 
 # Route to home page
 @app.route("/")
@@ -52,4 +53,4 @@ def new_song():
 
 # Run main program through the socket
 if __name__ == '__main__':
-	socketio.run(app)
+	app.run()

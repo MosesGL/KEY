@@ -1,12 +1,20 @@
 // Amount of notes shown before the starting/current note
 var prevNoteCount = 2;
+// Time (ms) between notes
+var noteInterval = 1000; //1 second
+// Calculate time between playedNotes updates
+var noteUpdatePrecision = 10;
+var noteUpdateInterval = noteInterval/noteUpdatePrecision;
 // Initialize vars for song info
 var song;
-var notes;
 // Store id value of current note
 var currentNoteID;
 // Interval called upon to play/pause the song
-var songInterval;
+var songLoop;
+// For storing the keys pressed between notes
+var playedNotes = [];
+// Counter for time between notes
+var counter = 0;
 
 // Edit HTML elements only once page is loaded
 $(document).ready(function() {
@@ -19,7 +27,6 @@ $(document).ready(function() {
             location.href = songSelectURL;
         }
         song = songData[songID];
-        notes = song['notes'];
         // Update song title
         $('#song-title').html(song['title']);
         $('#song-desc').html(song['desc']);
@@ -28,16 +35,16 @@ $(document).ready(function() {
         {
             $('.note-container').append(`<li id="${i}">~</li>`);
         }
-        $.map(notes, function(post, i) {
+        $.map(song['notes'], function(post, i) {
             // Properly format first note with .current
             if (i == 0) {
                 // Add note to notes list and .current class
-                $('.note-container').append('<li class="current" id="' + (i + prevNoteCount) + '">' + notes[i] + '</li>');
+                $('.note-container').append('<li class="current" id="' + (i + prevNoteCount) + '">' + song['notes'][i] + '</li>');
                 // Update current note
                 currentNoteID = i + prevNoteCount;
             } else {
                 // Add note to notes list
-                $('.note-container').append('<li id="' + (i + prevNoteCount) + '">' + notes[i] + '</li>');
+                $('.note-container').append('<li id="' + (i + prevNoteCount) + '">' + song['notes'][i] + '</li>');
             }
         });
     });
@@ -85,19 +92,20 @@ $(document).ready(function() {
             // Show previous notes
             showPreviousNotes();
         }
+        
+        // If song is playing,
+        // Reset setInterval timer to avoid instant note progression
+        if (songLoop != undefined) {
+            pauseSong();
+            playSong();
+        }
     });
 
     // Play / Pause song
     $('#start-btn').click(function() {
         // If song is not playing
-        if (songInterval == undefined) {
-            $('#start-btn').text('Pause');
-            // Start playing song AFTER 1 second
-            setTimeout(function() {
-                moveNoteForward();
-                // Move note forward every second
-                songInterval = setInterval(moveNoteForward, 1000);
-            }, 1000);
+        if (songLoop == undefined) {
+            playSong();
         } else {
             pauseSong();
         }
@@ -108,23 +116,34 @@ $(document).ready(function() {
         location.reload();
     })
 
+    // Play song function
+    function playSong() {
+        $('#start-btn').text('Pause');
+        // Call initial
+        checkPlayedNotes(moveNoteForward);
+        // Move note forward
+        songLoop = setInterval(function() {
+            checkPlayedNotes(moveNoteForward);
+        }, noteUpdateInterval);
+    }
+
     // Pause song function
     function pauseSong() {
         $('#start-btn').text('Play');
         // Stop function calling
-        clearInterval(songInterval);
+        clearInterval(songLoop);
         // Reset songInterval variable
-        songInterval = undefined;
+        songLoop = undefined;
     }
 
-    //WHEN CORRECT NOTE IS PLAYED, moveNoteForward()
+    // Progress forward a note in the song
     function moveNoteForward() {
-        console.log(currentNoteID+1);
         // If next current note is not valid, autopause the song
         //  - ~~~.length = final note's ID
         //  - currentNoteID + 1 = ID of next current note
         if ($('.note-container > li').length == currentNoteID + 1) {
             pauseSong();
+            $('.current').css('background-color','blue');
             return;
         }
         // Remove current note
@@ -137,8 +156,42 @@ $(document).ready(function() {
         $('#' + currentNoteID).css('background-color', 'mediumseagreen');
         // Clear old notes
         clearPreviousNotes();
+        // Reset list of pressed keys
+        playedNotes = [];
+    }
+    
+    // Get recently played notes from python file
+    function checkPlayedNotes(callback) {
+        $.ajax({
+            url: "/getNotes",
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                // Iterate through note values in returned array
+                for (var i=0; i < response.length; i++) {
+                    playedNotes.push(response[i]);
+                }
+                counter++;
+                console.log(counter);
+                // If 1 second has passed correct note is in playedNotes
+                if (counter == noteUpdatePrecision && playedNotes.indexOf($('.current').text()) != -1) {
+                    console.log(response);
+                    // Calls moveNoteForward()
+                    callback(playedNotes);
+                    // Reset counter
+                    counter = 0;
+                } else if (counter == noteUpdatePrecision) {
+                    // Highlight red background to show wrong note played
+                    $('.current').css('background-color', 'red');
+                    // Reset counter
+                    counter = 0;
+                    return;
+                }
+            }
+        });
     }
 
+    // Hide notes that are further than 2 notes behind current notes
     function clearPreviousNotes() {
         // Remove all previous elements to scroll further in song
         $('.note-container > li').each(function() {
@@ -150,6 +203,7 @@ $(document).ready(function() {
         });
     }
 
+    // Show previously hidden notes
     function showPreviousNotes(noteID) {
         // Show the 2 previous elements
         $('.note-container > li:hidden').each(function() {
