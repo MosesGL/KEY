@@ -2,6 +2,12 @@
 var prevNoteCount = 2;
 // Time (ms) between notes
 var noteInterval = 1000; //1 second
+// How precise the note updating is
+var noteCheckPrecision = 4;
+// Time (ms) between each note update
+var noteCheckInterval = noteInterval / noteCheckPrecision;
+// Var for counting to see if noteInterval has passed
+var noteCheckCounter;
 // Initialize vars for song info
 var song;
 // Store id value of current note
@@ -116,15 +122,18 @@ $(document).ready(function() {
     // Play song function
     function playSong() {
         $('#start_btn').text('Pause');
-        // After 1 second
-        setTimeout(function() {
-            // Call initial update
-            checkPlayedNotes(moveNoteForward);
-            // Move note forward
-            songLoop = setInterval(function() {
-                checkPlayedNotes(moveNoteForward);
-            }, noteInterval);
-        }, noteInterval);
+        noteCheckCounter = 0;
+        // Call initial update
+        checkPlayedNotes(moveNoteForward);
+        // Move note forward
+        songLoop = setInterval(function() {
+            console.log()
+            // counter == noteCheckPrecision (noteInterval has passed)
+            checkPlayedNotes(moveNoteForward, noteCheckCounter == noteCheckPrecision);
+            // If counter says noteInterval was reached, reset counter
+            if (noteCheckCounter == noteCheckPrecision) { noteCheckCounter = 0; }
+            noteCheckCounter++;
+        }, noteCheckInterval);
     }
 
     // Pause song function
@@ -161,7 +170,7 @@ $(document).ready(function() {
     }
     
     // Get recently played notes from python file
-    function checkPlayedNotes(callback) {
+    function checkPlayedNotes(callback, noteIntervalPassed) {
         $.ajax({
             url: "/get_notes",
             type: "GET",
@@ -175,10 +184,12 @@ $(document).ready(function() {
                 if (playedNotes.indexOf($('#current').text()) != -1) {
                     // Calls moveNoteForward()
                     callback(playedNotes);
-                } else {
+                    // Reset counter
+                    noteCheckCounter = 0;
+                // If correct note was not played and it has been a second
+                } else if (noteIntervalPassed) {
                     // Highlight red background to show wrong note played
                     $('#current').css('background-color', 'red');
-                    // Reset counter
                 }
             }
         });
