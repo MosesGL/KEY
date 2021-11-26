@@ -1,3 +1,2 @@
 # KEY
-
-pip install flask flask-socketio eventlet
+pip3 install mido

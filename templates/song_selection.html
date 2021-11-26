@@ -17,7 +17,7 @@
                     // Add a link for each song
                     $.map(songData, function(post, i) {
                         // Add Song name to list as link (?songID=i gives song number to song_display)
-                        $('#songlist').append('<li><a href="' + songDisplayURL + '?songID=' + i + '">'+songData[i].title+'</a></li>');
+                        $('.songlist').append('<li><a href="' + songDisplayURL + '?songID=' + i + '">'+songData[i].title+'</a></li>');
                     });
                 });
             });
@@ -29,14 +29,14 @@
         <nav>
             <!--Use Flask/Jinja make the url references-->
             <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('song_select') }}" id="currentPage">Songlist</a>
+            <a href="{{ url_for('song_select') }}" id="current_page">Songlist</a>
             <a href="{{ url_for('new_song') }}">New Song</a>
         </nav>
         <header>
             <h1>KEY</h1>
             <h2>Your personal music tutor.</h2>
         </header>
-        <ul id="songlist">
+        <ul class="songlist">
         </ul>
     </body>
 </html>

@@ -5,11 +5,18 @@ html {
 }
 
 h1 {
-    padding: 15px;
-    font-size: 50px;
+    padding: 20px;
+    font-size: 35px;
 }
 
-.note-container {
+input[type="text"] {
+    width: 400px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.note_container {
     /*
     Automatically adjust note container's height to be sum of
      - Top + bottom padding (2 * padding)
@@ -22,7 +29,7 @@ h1 {
     overflow-y:hidden;
 }
 
-.note-container > li {
+.note_container > li {
     list-style-type: none;
     align-items: flex-start;
 
@@ -38,6 +45,6 @@ h1 {
     text-align: center;
 }
 
-.current {
+#current {
     background-color: mediumseagreen;
 }

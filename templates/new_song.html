@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/song_display.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='new_song.js') }}"></script>
         <title>KEY - Record New Song</title>
     </head>
     <body>
@@ -11,13 +13,22 @@
             <!--Use Flask/Jinja make the url references-->
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('song_select') }}">Songlist</a>
-            <a href="{{ url_for('new_song') }}" id="currentPage">New Song</a>
+            <a href="{{ url_for('new_song') }}" id="current_page">New Song</a>
         </nav>
         <header>
             <h1>KEY</h1>
             <h2>Your personal music tutor.</h2>
         </header>
 
+        <h1>Create New Song</h1>
 
+        <form action="{{ url_for('new_song') }}">
+            <p><input type="text" name="song_title" placeholder="Song title" /></p>
+            <p><input type="text" name="song_desc" placeholder="Song description" /></p>
+        </form>
+        <ul class="note_container"></ul>
+        <button id="record_btn">Record</button>
+        <button id="delete_btn">Delete Selected Note</button>
+        <button id="clear_btn">Clear All Notes</button>
     </body>
 </html>

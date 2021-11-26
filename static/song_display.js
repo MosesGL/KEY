@@ -2,9 +2,6 @@
 var prevNoteCount = 2;
 // Time (ms) between notes
 var noteInterval = 1000; //1 second
-// Calculate time between playedNotes updates
-var noteUpdatePrecision = 10;
-var noteUpdateInterval = noteInterval/noteUpdatePrecision;
 // Initialize vars for song info
 var song;
 // Store id value of current note
@@ -13,8 +10,6 @@ var currentNoteID;
 var songLoop;
 // For storing the keys pressed between notes
 var playedNotes = [];
-// Counter for time between notes
-var counter = 0;
 
 // Edit HTML elements only once page is loaded
 $(document).ready(function() {
@@ -27,24 +22,26 @@ $(document).ready(function() {
             location.href = songSelectURL;
         }
         song = songData[songID];
-        // Update song title
-        $('#song-title').html(song['title']);
-        $('#song-desc').html(song['desc']);
+        // Update song titles
+        $('.song_title').each(function() {
+            $(this).html(song['title']);
+        });
+        $('.song_desc').html(song['desc']);
         // Properly format first empty notes
         for (var i = 0; i < prevNoteCount; i++)
         {
-            $('.note-container').append(`<li id="${i}">~</li>`);
+            $('.note_container').append(`<li>~</li>`);
         }
         $.map(song['notes'], function(post, i) {
-            // Properly format first note with .current
+            // Properly format first note with #current
             if (i == 0) {
-                // Add note to notes list and .current class
-                $('.note-container').append('<li class="current" id="' + (i + prevNoteCount) + '">' + song['notes'][i] + '</li>');
+                // Add note to notes list and #current class
+                $('.note_container').append('<li id="current">' + song['notes'][i] + '</li>');
                 // Update current note
                 currentNoteID = i + prevNoteCount;
             } else {
                 // Add note to notes list
-                $('.note-container').append('<li id="' + (i + prevNoteCount) + '">' + song['notes'][i] + '</li>');
+                $('.note_container').append('<li>' + song['notes'][i] + '</li>');
             }
         });
     });
@@ -53,22 +50,22 @@ $(document).ready(function() {
     //EVENTS
     //~~~~~~~~~~~~~~~
     // Highlight notes' background when mouse hovers over
-    $(document).on('mouseenter', '.note-container > li', function() {
-        if ($(this).attr('class') != 'current')
+    $(document).on('mouseenter', '.note_container > li', function() {
+        if ($(this).attr('id') != 'current')
         {
             $(this).css('background-color','gray');
         }
     });
-    $(document).on('mouseleave', '.note-container > li',  function() {
-        if ($(this).attr('class') != 'current')
+    $(document).on('mouseleave', '.note_container > li',  function() {
+        if ($(this).attr('id') != 'current')
         {
             $(this).css('background-color','#abc');
         }
     });
     // Adjust list when new note is clicked on
-    $(document).on('click', '.note-container > li', function() {
+    $(document).on('click', '.note_container > li', function() {
         // Init variable for clicked node's id
-        var clickedID = parseInt($(this).attr('id'));
+        var clickedID = $(this).index();
         // Get relative direction from current note to clicked note
         var forwardNote = clickedID > currentNoteID;
         // Return if clicked note's id suggests it is a spacing note
@@ -76,12 +73,12 @@ $(document).ready(function() {
         if (clickedID < prevNoteCount || clickedID == currentNoteID) { return; }
         
         // Remove current note
-        $('.current').css('background-color','#abc');
-        $('.current').removeClass('current');
+        $('#current').css('background-color','#abc');
+        $('#current').removeAttr('id');
         // Assign id value of new current note as the clicked note
         currentNoteID = clickedID
         // Select next current note
-        $(this).addClass('current');
+        $(this).attr('id','current');
         $(this).css('background-color', 'mediumseagreen');
 
         // Adjust notes
@@ -102,34 +99,37 @@ $(document).ready(function() {
     });
 
     // Play / Pause song
-    $('#start-btn').click(function() {
+    $('#start_btn').click(function() {
         // If song is not playing
         if (songLoop == undefined) {
             playSong();
         } else {
             pauseSong();
         }
-    })
+    });
 
     // Start song over by reloading page
-    $('#reset-btn').click(function() {
+    $('#reset_btn').click(function() {
         location.reload();
-    })
+    });
 
     // Play song function
     function playSong() {
-        $('#start-btn').text('Pause');
-        // Call initial
-        checkPlayedNotes(moveNoteForward);
-        // Move note forward
-        songLoop = setInterval(function() {
+        $('#start_btn').text('Pause');
+        // After 1 second
+        setTimeout(function() {
+            // Call initial update
             checkPlayedNotes(moveNoteForward);
-        }, noteUpdateInterval);
+            // Move note forward
+            songLoop = setInterval(function() {
+                checkPlayedNotes(moveNoteForward);
+            }, noteInterval);
+        }, noteInterval);
     }
 
     // Pause song function
     function pauseSong() {
-        $('#start-btn').text('Play');
+        $('#start_btn').text('Play');
         // Stop function calling
         clearInterval(songLoop);
         // Reset songInterval variable
@@ -138,22 +138,22 @@ $(document).ready(function() {
 
     // Progress forward a note in the song
     function moveNoteForward() {
-        // If next current note is not valid, autopause the song
+        // If on last note of song
         //  - ~~~.length = final note's ID
-        //  - currentNoteID + 1 = ID of next current note
-        if ($('.note-container > li').length == currentNoteID + 1) {
+        //  - currentNoteID = ID of current note
+        if ($('.note_container > li').length == currentNoteID) {
             pauseSong();
-            $('.current').css('background-color','blue');
+            $('#current').css('background-color','blue');
             return;
         }
         // Remove current note
-        $('.current').css('background','#abc');
-        $('.current').removeClass('current');
+        $('#current').css('background','#abc');
+        $('#current').removeAttr('id');
         // Update current note ID
         currentNoteID = currentNoteID + 1;
         // Select next current note
-        $('#' + currentNoteID).addClass('current');
-        $('#' + currentNoteID).css('background-color', 'mediumseagreen');
+        $('li:nth-child('+currentNoteID+')').attr('id','current');
+        $('li:nth-child('+currentNoteID+')').css('background-color', 'mediumseagreen');
         // Clear old notes
         clearPreviousNotes();
         // Reset list of pressed keys
@@ -163,7 +163,7 @@ $(document).ready(function() {
     // Get recently played notes from python file
     function checkPlayedNotes(callback) {
         $.ajax({
-            url: "/getNotes",
+            url: "/get_notes",
             type: "GET",
             dataType: "json",
             success: function(response) {
@@ -171,21 +171,14 @@ $(document).ready(function() {
                 for (var i=0; i < response.length; i++) {
                     playedNotes.push(response[i]);
                 }
-                counter++;
-                console.log(counter);
-                // If 1 second has passed correct note is in playedNotes
-                if (counter == noteUpdatePrecision && playedNotes.indexOf($('.current').text()) != -1) {
-                    console.log(response);
+                // If correct note is in playedNotes
+                if (playedNotes.indexOf($('#current').text()) != -1) {
                     // Calls moveNoteForward()
                     callback(playedNotes);
-                    // Reset counter
-                    counter = 0;
-                } else if (counter == noteUpdatePrecision) {
+                } else {
                     // Highlight red background to show wrong note played
-                    $('.current').css('background-color', 'red');
+                    $('#current').css('background-color', 'red');
                     // Reset counter
-                    counter = 0;
-                    return;
                 }
             }
         });
@@ -194,9 +187,9 @@ $(document).ready(function() {
     // Hide notes that are further than 2 notes behind current notes
     function clearPreviousNotes() {
         // Remove all previous elements to scroll further in song
-        $('.note-container > li').each(function() {
+        $('.note_container > li').each(function() {
             // Compare index of list
-            if (parseInt($(this).attr('id')) < currentNoteID-prevNoteCount)
+            if ($(this).index() < currentNoteID-prevNoteCount)
             {
                 $(this).hide();
             }
@@ -206,9 +199,9 @@ $(document).ready(function() {
     // Show previously hidden notes
     function showPreviousNotes(noteID) {
         // Show the 2 previous elements
-        $('.note-container > li:hidden').each(function() {
+        $('.note_container > li:hidden').each(function() {
             // If ID of note is within 2 notes, show
-            if (parseInt($(this).attr('id')) >= currentNoteID - prevNoteCount)
+            if ($(this).index() >= currentNoteID - prevNoteCount)
             {
                 $(this).show();
             }
