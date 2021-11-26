@@ -3,8 +3,14 @@ var recordLoop = undefined;
 // Precision of recording note updates (ms)
 var noteCheckInterval = 250;
 
-var currentNoteID = 0;
 var prevNoteCount = 4;
+
+// Background color of selected notes
+var selectedNoteColor = "mediumseagreen";
+// Background color of hovered over notes
+var hoverNoteColor = "gray";
+// Background color of last note in song when completed
+var finishNoteColor = "blue";
 
 $(document).ready(function() {
     // Add empty notes at beginning of song for spacing
@@ -27,83 +33,52 @@ $(document).ready(function() {
 
     // Highlight notes' background when mouse hovers over
     $(document).on('mouseenter', '.note_container > li', function() {
-        if ($(this).attr('id') != 'current')
+        if ($(this).attr('id') != 'selected')
         {
-            $(this).css('background-color','gray');
+            $(this).css('background-color',hoverNoteColor);
         }
     });
     $(document).on('mouseleave', '.note_container > li',  function() {
-        if ($(this).attr('id') != 'current')
+        if ($(this).attr('id') != 'selected')
         {
-            $(this).css('background-color','#abc');
+            $(this).css('background-color','transparent');
         }
     });
 
     // Adjust list to focus on clicked note (on left click)
     $(document).on('click', '.note_container > li', function() {
-        // Stop song recording
+        // Stop recording notes
         stopRec();
-
-        // Init variable for clicked node's id
-        var clickedID = $(this).index();
-        // Get relative direction from current note to clicked note
-        var forwardNote = clickedID > currentNoteID;
-        // Return if clicked note's id suggests it is a spacing note
-        //      or if clicked note is already the current note
-        if (clickedID < prevNoteCount || clickedID == currentNoteID) { return; }
-        
-        // Remove current note
-        $('#current').css('background-color','#abc');
-        $('#current').removeAttr('id');
-        // Assign id value of new current note as the clicked note
-        currentNoteID = clickedID;
-        // Select next current note
-        $(this).attr('id','current');
-        $(this).css('background-color', 'mediumseagreen');
-
-        // Adjust notes
-        if (forwardNote) {
-            // Hide old notes
-            clearPreviousNotes();
-        } else {
-            // Show previous notes-
-            showPreviousNotes();
-        }
+        // Change selected note to this note
+        changeCurrentNote($(this).index());
     });
 
+    // ADUBGSUDBGSDBGDSG
     // Delete currently selected note
     $('#delete_btn').click(function() {
-        // Stop song recording
+        // Stop recording notes
         stopRec();
 
         // If there are no notes in the song, return 
         if ($('.note_container li').length <= prevNoteCount) { return; }
-        // Init variable for clicked node's id
-        var selectedID = $('#current').index();
-        // Remove selected element
-        $('#current').remove();
+        // Fetch currently selected element
+        var selectedNoteIndex = $('#selected').index();
+        // Remove selected note element
+        $('#selected').remove();
         // If note position is at beginning of list and note in its place exists
-        if (prevNoteCount == selectedID) {
-            var index = prevNoteCount + 1;
+        if (prevNoteCount == selectedNoteIndex) {
             // Make replacement note the new current note
-            $('.note_container > li:nth-child('+index+')').attr('id','current');
-            $('.note_container > li:nth-child('+index+')').css('background-color', 'mediumseagreen');
+            changeCurrentNote(selectedNoteIndex);
         }
         else {
             // Make previous note the new current note
-            $('.note_container > li:nth-child('+selectedID+')').attr('id','current');
-            $('.note_container > li:nth-child('+selectedID+')').css('background-color', 'mediumseagreen');
-            // Assign id value of new current note
-            currentNoteID = selectedID - 1;
+            changeCurrentNote(selectedNoteIndex - 1);
         }
-
-        // Show previously hidden notes
-        showPreviousNotes();
     });
 
     // Clear all added notes
     $('#clear_btn').click(function() {
-        // Stop song recording
+        // Stop recording notes
         stopRec();
         // Clear all note blocks from list
         $('.note_container').empty();
@@ -165,30 +140,6 @@ $(document).ready(function() {
         recordLoop = undefined;
     }
 
-    // Hide notes that are further than 2 notes behind current notes
-    function clearPreviousNotes() {
-        // Remove all previous elements to scroll further in song
-        $('.note_container > li').each(function() {
-            // Compare index of list
-            if ($(this).index() < currentNoteID-prevNoteCount)
-            {
-                $(this).hide();
-            }
-        });
-    }
-
-    // Show previously hidden notes
-    function showPreviousNotes(noteID) {
-        // Show the 2 previous elements
-        $('.note_container > li:hidden').each(function() {
-            // If ID of note is within 2 notes, show
-            if ($(this).index() >= currentNoteID-prevNoteCount)
-            {
-                $(this).show();
-            }
-        });
-    }
-
     // Get recently played notes from python file
     function getPlayedNotes(callback) {
         $.ajax({
@@ -207,15 +158,79 @@ $(document).ready(function() {
         for (var i=0; i < notes.length; i++) {
             // Add note to notes list
             $('.note_container').append('<li>' + notes[i] + '</li>');
-            // Remove current note
-            $('#current').css('background','#abc');
-            $('#current').removeAttr('id');
-            // Assign id value of new current note as the clicked note
-            currentNoteID = $('.note_container li:last-child').index();
-            // Select next current note
-            $('.note_container li:last-child').attr('id','current');
-            $('.note_container li:last-child').css('background-color', 'mediumseagreen');
-            clearPreviousNotes();
         }
+        // Switch selected note to last note added to ul
+        changeCurrentNote($('.note_container li:last-child').index());
+    }
+
+    // Changes currently selected note to new note (param: index of new selected note)
+    function changeCurrentNote(newNoteIndex) {
+        // Return if clicked note's id suggests it is a spacing note
+        if (newNoteIndex < prevNoteCount) { return; }
+        
+        // Bool, answers the question: is the new note backwards or forwards in the song list
+        var forwardNote;
+
+        // If selected note exists
+        if ($('#selected').length > 0) {
+
+            // Get index of currently selected note
+            var selectedNote = $('#selected');
+            // Get relative direction from currently selected note to new note
+            forwardNote = newNoteIndex > selectedNote.index();
+
+            // Return if clicked note is already the current note
+            if (newNoteIndex == selectedNote.index()) { return; }
+
+            // Remove currently selected note
+            selectedNote.css('background-color','transparent');
+            selectedNote.removeAttr('id');
+        }
+        // If no notes are selected
+        else {
+            forwardNote = false;
+        }
+
+        // Select new note (Child indices start at 1, not 0)
+        var childIndex = newNoteIndex + 1;
+        $('li:nth-child('+childIndex+')').attr('id','selected');
+        $('li:nth-child('+childIndex+')').css('background-color',selectedNoteColor);
+        
+        if (forwardNote) {
+            // Hide old notes
+            clearPreviousNotes();
+        } else {
+            // Show previously hidden notes
+            showPreviousNotes();
+        }
+    }
+
+
+    // Hide notes that are further than (prevNoteCount) notes behind current notes
+    function clearPreviousNotes() {
+        // Index of selected note
+        var selectedNoteIndex = $('#selected').index();
+        // Remove previous elements to "move forward" in note list
+        $('.note_container > li').each(function() {
+            // If index of note is not within (prevNoteCount) notes of selected note, hide element
+            if ($(this).index() < selectedNoteIndex - prevNoteCount)
+            {
+                $(this).hide();
+            }
+        });
+    }
+
+    // Show previously hidden notes
+    function showPreviousNotes() {
+        // Index of selected note
+        var selectedNoteIndex = $('#selected').index();
+        // Show previous elements to "move back" in note list
+        $('.note_container > li:hidden').each(function() {
+            // If index of note is within (prevNoteCount) notes of selected note, show element
+            if ($(this).index() >= selectedNoteIndex - prevNoteCount)
+            {
+                $(this).show();
+            }
+        });
     }
 });
