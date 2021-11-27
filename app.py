@@ -85,6 +85,10 @@ def remove_song():
 	remove_song_csv(song_index)
 	return 'Success'
 
+# Route, redirects to settings pagg
+@app.route('/settings')
+def settings():
+	return render_template('home.html')
 
 # Read song data from CSV file
 def load_songs():

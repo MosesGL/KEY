@@ -66,14 +66,30 @@ $(document).ready(function() {
             success: function(notes) {
                 // Iterate through note values in returned array
                 for (var i=0; i < notes.length; i++) {
-                    playedNotes.push(notes[i]);
+                    // Convert musical symbols to their html equivalents
+                    var note = notes[i].replace('&#9837;','♭');
+                    note = note.replace('&#9839;','♯');
+                    // Add note to list
+                    playedNotes.push(note);
                 }
+                // Check to see if pressed notes match selected note
+                var matchingNote = function() {
+                    var goalString= $('#selected').text();
+                    for (var i=0;i<playedNotes.length;i++) {
+                        if (playedNotes[i] == goalString) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }();
                 // If correct note is in playedNotes
-                if (playedNotes.indexOf($('#selected').text()) != -1) {
+                if (matchingNote) {
                     // Calls moveNoteForward()
                     callback();
                     // Reset counter
                     noteCheckCounter = 0;
+                    // Reset played notes
+                    playedNotes = [];
                 // If correct note was not played and it has been a second
                 } else if (noteIntervalPassed) {
                     // Highlight red background to show wrong note played
