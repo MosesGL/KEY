@@ -13,8 +13,12 @@ app = Flask(__name__)
 NOTES_FLAT = ['A','B&#9837;','B','C','D&#9837;','D','E&#9837;','E','F','F&#9837;','G','A&#9837;']
 NOTES_SHARP = ['A','A&#9839;','B','C','C&#9839;','D','D&#9839;','E','F','F&#9839;','G','G&#9839;']
 
-# Name of file with song data
+CONFIG_FILE = 'static/data/config.json'
 SAVED_SONGS_FILE = 'static/data/song_data.csv'
+
+# Config data list
+config_data = {}
+
 # User prefer sharps or flats?
 use_sharp = False
 # Range of keyboard
@@ -46,6 +50,11 @@ def song_display():
 def new_song():
 	return render_template('new_song.html')
 
+# Route to get config data
+@app.route('/get_config', methods=['GET'])
+def get_config():
+	return json.dumps(config_data)
+
 # Route to get song data
 @app.route('/get_songs', methods=['GET'])
 def get_songs():
@@ -62,6 +71,16 @@ def get_notes():
 @app.route('/clear_notes')
 def clear_notes():
 	notes_pressed.clear()
+	return 'Success'
+
+# Route to SET config data
+@app.route('/set_config', methods=['POST'])
+def set_config():
+	# Get config arguments
+	config_info = json.loads(request.data)
+	config_data[config_info[0]] = config_info[1]
+	# Save config file with new data
+	save_config()
 	return 'Success'
 
 # Route to save a new song
@@ -88,28 +107,41 @@ def remove_song():
 # Route, redirects to settings pagg
 @app.route('/settings')
 def settings():
-	return render_template('home.html')
+	return render_template('settings.html')
 
-# Read song data from CSV file
+# Read and return data from config file
+def load_config():
+	# Open json file and return data inside it
+	with open(CONFIG_FILE,'r') as infile:
+		return json.load(infile)
+
+# Save data to config file
+def save_config():
+	# Open json file and write config data to it
+	with open(CONFIG_FILE,'w') as outfile:
+		json.dump(config_data, outfile, indent=4)
+
+# Read and return song data from CSV file
 def load_songs():
-	global song_list
+	temp_list = []
 	# Open CSV file
-	with open(SAVED_SONGS_FILE, 'r') as song_file:
+	with open(SAVED_SONGS_FILE, 'r') as infile:
 		# Create csv reader to parse file
-		reader = csv.reader(song_file)
+		reader = csv.reader(infile)
 		# Reformat data from each row (song)
 		for row in reader:
 			title = row[0]
 			desc = row[1]
 			notes = row[2].split('-')
-			song_list.append({'title':title,'desc':desc,'notes':notes})
+			temp_list.append({'title':title,'desc':desc,'notes':notes})
+		return temp_list
 
 # Write new song data to CSV file
 def save_song_csv(new_song):
 	# Open CSV file for appending
-	with open(SAVED_SONGS_FILE, 'a') as song_file:
+	with open(SAVED_SONGS_FILE, 'a') as outfile:
 		# Create csv writer
-		writer = csv.writer(song_file)
+		writer = csv.writer(outfile)
 		# Write every element of song into row (notes separated by -)
 		writer.writerow([new_song['title'],new_song['desc'],'-'.join(new_song['notes'])])
 
@@ -118,9 +150,9 @@ def remove_song_csv(song_index):
 	# Remove song from list
 	del song_list[song_index]
 	# Open CSV file for reading and writing
-	with open(SAVED_SONGS_FILE,'w') as song_file:
+	with open(SAVED_SONGS_FILE,'w') as outfile:
 		# Create csv writer
-		writer = csv.writer(song_file)
+		writer = csv.writer(outfile)
 		# Rewrite every row with new song_list
 		for song in song_list:
 			writer.writerow([song['title'],song['desc'],'-'.join(song['notes'])])
@@ -148,11 +180,25 @@ def get_next_note(notes_pressed):
 
 # Run main program
 if __name__ == '__main__':
+	# Get config information
+	config_data = load_config()
+	# config_data['use_sharp'] = False
+	# config_data['note_interval'] = 1000
+	# config_data['note_check_precision'] = 6
+	# config_data['wait_for_note_press'] = True
+	# config_data['selected_note_color'] = 'mediumseagreen'
+	# config_data['hover_note_color'] = 'gray'
+	# config_data['missed_note_color'] = 'red'
+	# config_data['finish_note_color'] = 'blue'
+	# config_data['invalid_color'] = 'red'
+	# config_data['display_prev_note_count'] = 2
+	# config_data['new_song_prev_note_count'] = 4
+	print(config_data)
 	# Start thread that gets input from midi keyboard
 	p = Thread(target=get_next_note, args=(notes_pressed,))
 	p.start()
 	# Load songs from file
-	load_songs()
+	song_list = load_songs()
 	# Run main web app
 	app.run(debug=True, use_reloader=False)
 	p.join()

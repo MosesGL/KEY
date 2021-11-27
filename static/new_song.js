@@ -1,40 +1,50 @@
-// Amount of notes shown before the starting selected note
-var prevNoteCount = 4;
-// Time between notes (ms) when playing through song
-var noteInterval = 1000; //1 second
-// How precise the note updating is
-var noteCheckPrecision = 6;
-// Time (ms) between each note update
-var noteCheckInterval = noteInterval / noteCheckPrecision;
-// Bool, should program wait for correct key press
-var waitForNotePress = true;
-// Var for counting to see if noteInterval has passed
-var noteCheckCounter;
-// Interval called upon to control song playback
-var songLoop = undefined;
-// Interval called upon to control recording
-var recordLoop = undefined;
-// For storing the keys pressed between notes
-var playedNotes = [];
-// Background color of selected notes
-var selectedNoteColor = "mediumseagreen";
-// Background color of hovered over notes
-var hoverNoteColor = "gray";
-// Background color of note when it's not played in time
-var missedNoteColor = "red";
-// Background color of last note in song when completed
-var finishNoteColor = "blue";
-// Color for invalid elements
-var invalidColor = "red";
-
+// Edit HTML elements only once page is loaded
 $(document).ready(function() {
+    // Var for counting to see if config['note_interval'] has passed
+    var noteCheckCounter;
+    // Interval called upon to control song playback
+    var songLoop = undefined;
+    // Interval called upon to control recording
+    var recordLoop = undefined;
+    // For storing the keys pressed between notes
+    var playedNotes = [];
+    // Get config information
+    config = getConfig();
+    // Time (ms) between each note update
+    var noteCheckInterval = config['note_interval'] / config['update_precision'];
     // Add empty notes at beginning of song for spacing
     addSpacingNotes();
+
 
     //~~~~~~~~~~~~~~~
     // WEB REQUESTS
     //~~~~~~~~~~~~~~~
 
+
+    // Get config information
+    function getConfig() {
+        config = $.ajax({
+            async: false,
+            url: "/get_config",
+            type: "GET",
+            dataType: "json"
+        }).responseText;
+        return JSON.parse(config);
+    }
+    // Set new JSON information
+    function setConfig(key, value) {
+        // Send song info to main app.py to save
+        $.ajax({
+            url: '/set_config',
+            data: JSON.stringify([key, value]),
+            contentType: 'application/json;charset=UTF-8',
+            type: 'POST',
+            success: function() {
+                // Alert user that song was saved
+                alert('Config Saved!');
+            }
+        });
+    }
 
     // Get recently played notes from python file (for recording)
     function getPlayedNotes(callback) {
@@ -48,7 +58,6 @@ $(document).ready(function() {
             }
         });
     }
-
     // Get recently played notes from python file,
     //   Check them to see if they match the selected note
     function checkPlayedNotes(callback, noteIntervalPassed) {
@@ -86,7 +95,7 @@ $(document).ready(function() {
                 // If correct note was not played and it has been a second
                 } else if (noteIntervalPassed) {
                     // Highlight red background to show wrong note played
-                    $('#selected').css('background-color', missedNoteColor);
+                    $('#selected').css('background-color', config['missed_note_color']);
                 }
             }
         });
@@ -129,7 +138,7 @@ $(document).ready(function() {
             // Alert user that song was saved
             alert('Please enter a valid song title.');
             // Highlight border of title
-            $('#title_input').css('border','2px solid '+invalidColor);
+            $('#title_input').css('border','2px solid '+config['invalid_color']);
             // Exit function
             return;
         }
@@ -138,7 +147,7 @@ $(document).ready(function() {
             // Alert user that song was saved
             alert('Song '+title+' already exists. Please enter a new title.');
             // Highlight border of title
-            $('#title_input').css('border','2px solid '+invalidColor);
+            $('#title_input').css('border','2px solid '+config['invalid_color']);
             // Exit function
             return;
         }
@@ -147,11 +156,11 @@ $(document).ready(function() {
             $('#title_input').css('border','2px inset #EBE9ED');
         }
         // If there are no notes in the song
-        if ($('.note_container li').length == prevNoteCount) {
+        if ($('.note_container li').length == config['nsong_spacing_notes']) {
             // Alert user that song was saved
             alert('Please add notes to song.');
             // Highlight border of note container
-            $('.note_container').css('border','2px solid '+invalidColor);
+            $('.note_container').css('border','2px solid '+config['invalid_color']);
             // Exit function
             return;
         } else {
@@ -163,7 +172,7 @@ $(document).ready(function() {
         // Populate note list with recorded li elements
         $('.note_container > li').each(function() {
             // Avoid spacing notes
-            if ($(this).index() >= prevNoteCount) {
+            if ($(this).index() >= config['nsong_spacing_notes']) {
                 notes.push($(this).text());
             }
         });
@@ -206,35 +215,35 @@ $(document).ready(function() {
         // Clear list of previously pressed notes
         clearPressedNotes();
         // Return if there are no notes in the song
-        if ($('.note_container li').length == prevNoteCount) { return; }
+        if ($('.note_container li').length == config['nsong_spacing_notes']) { return; }
         // Change play/pause button's text
         $('#play_btn').text('Pause');
         // If last note in ul is selected
         if ($('.note_container > li').length-1 == $('#selected').index()) {
             // Change selected note to first note in ul
-            changeSelectedNote(prevNoteCount);
+            changeSelectedNote(config['nsong_spacing_notes']);
         }
-        if (waitForNotePress) {
+        if (config['wait_for_note']) {
             // Reset note counter
             noteCheckCounter = 0;
             // Move note forward every (noteCheckInterval) ms
             songLoop = setInterval(function() {
-                // counter == noteCheckPrecision (noteInterval has passed)
-                var noteIntervalPassed = noteCheckCounter == noteCheckPrecision;
+                // counter == config['update_precision'] (note interval has passed)
+                var noteIntervalPassed = noteCheckCounter == config['update_precision'];
                 checkPlayedNotes(moveNoteForward, noteIntervalPassed);
-                // If counter says noteInterval was reached, reset counter
+                // If counter says note interval was reached, reset counter
                 if (noteIntervalPassed) { noteCheckCounter = 0; }
                 // Increase counter
                 noteCheckCounter++;
             }, noteCheckInterval);
         } else {
-            // After (noteInterval) ms
+            // After config['note_interval'] ms
             setTimeout(function() {
                 // Call initial update
                 moveNoteForward();
-                // Move note forward every (noteInterval)
-                songLoop = setInterval(moveNoteForward, noteInterval);
-            }, noteInterval);
+                // Move note forward every config['note_interval'] ms
+                songLoop = setInterval(moveNoteForward, config['note_interval']);
+            }, config['note_interval']);
         }
     }
     // Pause song function
@@ -289,7 +298,7 @@ $(document).ready(function() {
     // Add empty notes at beginning of song for spacing
     function addSpacingNotes() {
         // ADD SPACING NOTES
-        for (var i=0;i < prevNoteCount; i++) {
+        for (var i=0;i < config['nsong_spacing_notes']; i++) {
             // Add note to notes list
             $('.note_container').append('<li>~</li>');
         }
@@ -315,7 +324,7 @@ $(document).ready(function() {
         //  - selectedNoteIndex = index of selected note
         if ($('.note_container > li').length-1 == selectedNoteIndex) {
             stopSong();
-            $('#selected').css('background-color',finishNoteColor);
+            $('#selected').css('background-color',config['finish_note_color']);
             return;
         }
         // Change selected note to next note in ul
@@ -324,7 +333,7 @@ $(document).ready(function() {
     // Changes selected note to new note (param: index of new selected note)
     function changeSelectedNote(newNoteIndex) {
         // Return if clicked note's id suggests it is a spacing note
-        if (newNoteIndex < prevNoteCount) { return; }
+        if (newNoteIndex < config['nsong_spacing_notes']) { return; }
         // Bool, answers the question: is the new note backwards or forwards in the song list
         var forwardNote;
         // If selected note exists
@@ -347,7 +356,7 @@ $(document).ready(function() {
         // Select new note (Child indices start at 1, not 0)
         var childIndex = newNoteIndex + 1;
         $('li:nth-child('+childIndex+')').attr('id','selected');
-        $('li:nth-child('+childIndex+')').css('background-color',selectedNoteColor);
+        $('li:nth-child('+childIndex+')').css('background-color',config['selected_note_color']);
         
         if (forwardNote) {
             // Hide old notes
@@ -358,27 +367,27 @@ $(document).ready(function() {
         }
     }
 
-    // Hide notes that are further than (prevNoteCount) notes behind selected note
+    // Hide notes that are further than (config['nsong_spacing_notes']) notes behind selected note
     function clearPreviousNotes() {
         // Index of selected note
         var selectedNoteIndex = $('#selected').index();
         // Remove previous elements to "move forward" in note list
         $('.note_container > li').each(function() {
-            // If index of note is not within (prevNoteCount) notes of selected note, hide element
-            if ($(this).index() < selectedNoteIndex - prevNoteCount)
+            // If index of note is not within (config['nsong_spacing_notes']) notes of selected note, hide element
+            if ($(this).index() < selectedNoteIndex - config['nsong_spacing_notes'])
             {
                 $(this).hide();
             }
         });
     }
-    // Show notes that are within (prevNoteCount) notes behind selected note
+    // Show notes that are within (config['nsong_spacing_notes']) notes behind selected note
     function showPreviousNotes() {
         // Index of selected note
         var selectedNoteIndex = $('#selected').index();
         // Show previous elements to "move back" in note list
         $('.note_container > li:hidden').each(function() {
-            // If index of note is within (prevNoteCount) notes of selected note, show element
-            if ($(this).index() >= selectedNoteIndex - prevNoteCount)
+            // If index of note is within (config['nsong_spacing_notes']) notes of selected note, show element
+            if ($(this).index() >= selectedNoteIndex - config['nsong_spacing_notes'])
             {
                 $(this).show();
             }
@@ -395,7 +404,7 @@ $(document).ready(function() {
     $(document).on('mouseenter', '.note_container > li', function() {
         if ($(this).attr('id') != 'selected')
         {
-            $(this).css('background-color',hoverNoteColor);
+            $(this).css('background-color',config['hover_note_color']);
         }
     });
     $(document).on('mouseleave', '.note_container > li',  function() {
@@ -418,13 +427,13 @@ $(document).ready(function() {
         // Stop playing/recording loops
         stopLoops();
         // If there are no notes in the song, return 
-        if ($('.note_container li').length <= prevNoteCount) { return; }
+        if ($('.note_container li').length <= config['nsong_spacing_notes']) { return; }
         // Fetch selected element
         var selectedNoteIndex = $('#selected').index();
         // Remove selected note element
         $('#selected').remove();
         // If note position is at beginning of list and note in its place exists
-        if (prevNoteCount == selectedNoteIndex) {
+        if (config['nsong_spacing_notes'] == selectedNoteIndex) {
             // Make replacement note the new selected note
             changeSelectedNote(selectedNoteIndex);
         }
