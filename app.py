@@ -43,7 +43,8 @@ def new_song():
 def return_notes():
 	data = json.dumps(notes_pressed.copy())
 	notes_pressed.clear()
-	return data
+	#return data
+	return json.dumps(['A','B','C'])
 
 # Function to translate midi key numbers to note letters
 def translate_key(key_num):
@@ -51,6 +52,11 @@ def translate_key(key_num):
         return NOTES_SHARP[key_num % len(NOTES_SHARP)]
     else:
         return NOTES_FLAT[key_num % len(NOTES_FLAT)]
+
+def function_temp():
+	data = json.dumps(notes_pressed.copy())
+	notes_pressed.clear()
+	return data
 
 # Function that returns recently played note
 def get_next_note(notes_pressed):
