@@ -1,0 +1,13 @@
+{
+    "use_sharp": false,
+    "note_interval": 1000,
+    "update_precision": 6,
+    "wait_for_note": false,
+    "selected_note_color": "mediumseagreen",
+    "hover_note_color": "gray",
+    "missed_note_color": "red",
+    "finish_note_color": "blue",
+    "invalid_color": "red",
+    "display_spacing_notes": 2,
+    "nsong_spacing_notes": 4
+}
