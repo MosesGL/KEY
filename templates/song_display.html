@@ -6,36 +6,34 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/song_display.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
         <script>
+            // Get song index from Jinja
+            var songIndex = "{{ songIndex }}";
             // URL for song selection page
             var songSelectURL = "{{ url_for('song_selection') }}";
             // Load external script into html
-            $.getScript("{{ url_for('static', filename='new_song.js') }}");
+            $.getScript("{{ url_for('static', filename='song_display.js') }}");
         </script>
-        <title>KEY - Record New Song</title>
+        <title>KEY - Play Song 1</title>
     </head>
     <body>
         <nav>
             <!--Use Flask/Jinja make the url references-->
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('song_selection') }}">Songlist</a>
-            <a href="{{ url_for('new_song') }}" id="current_page">New Song</a>
+            <a href="{{ url_for('new_song') }}">New Song</a>
+            <a id="current_page" class="song_title"></a>
         </nav>
         <header>
             <h1>KEY</h1>
             <h2>Your personal music tutor.</h2>
         </header>
 
-        <h1>Create New Song</h1>
+        <h1 class="song_title"></h1>
+        <h2 class="song_desc"></h2>
 
-        <form action="{{ url_for('new_song') }}">
-            <p><input type="text" id="title_input" placeholder="Song title" /></p>
-            <p><input type="text" id="desc_input" placeholder="Song description" /></p>
-        </form>
         <ul class="note_container"></ul>
-        <button id="play_btn">Play</button>
-        <button id="record_btn">Record</button>
-        <button id="delete_btn">Delete Selected Note</button>
-        <button id="clear_btn">Clear All Notes</button>
-        <button id="save_btn">Save Song</button>
+        
+        <button id='play_btn'>Play</button>
+        <button id='reset_btn'>Reset</button>
     </body>
 </html>

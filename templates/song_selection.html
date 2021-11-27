@@ -6,21 +6,10 @@
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
         <!--JAVASCRIPT/JQUERY/AJAX-->
         <script>
-            // Get default url for song display from Flask/Jinja
+            // URL for song display page
             var songDisplayURL = "{{ url_for('song_display') }}";
-            // Get JSON data with song info
-            var songDataURL = "../static/data/songs.json";
-            // When document is loaded
-            $(document).ready(function() {
-                // Fetch JSON data in readable format
-                $.getJSON(songDataURL, function (songData) {
-                    // Add a link for each song
-                    $.map(songData, function(post, i) {
-                        // Add Song name to list as link (?songID=i gives song number to song_display)
-                        $('.songlist').append('<li><a href="' + songDisplayURL + '?songID=' + i + '">'+songData[i].title+'</a></li>');
-                    });
-                });
-            });
+            // Load external script into html
+            $.getScript("{{ url_for('static', filename='song_selection.js') }}");
         </script>
         <!--END JAVASCRIPT/JQUERY/AJAX-->
         <title>KEY - Song Selection</title>
@@ -29,7 +18,7 @@
         <nav>
             <!--Use Flask/Jinja make the url references-->
             <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('song_select') }}" id="current_page">Songlist</a>
+            <a href="{{ url_for('song_selection') }}" id="current_page">Songlist</a>
             <a href="{{ url_for('new_song') }}">New Song</a>
         </nav>
         <header>
