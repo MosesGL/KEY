@@ -83,6 +83,13 @@ $(document).ready(function() {
         });
     }
 
+    // Clear list of previously pressed notes
+    function clearPressedNotes() {
+        $.ajax({
+            url: "/clear_notes"
+        });
+    }
+
 
     //~~~~~~~~~~~~~~~
     // FUNCTIONS
@@ -115,6 +122,8 @@ $(document).ready(function() {
 
     // Play song function
     function startSong() {
+        // Clear list of previously pressed notes
+        clearPressedNotes();
         // Return if there are no notes in the song
         if ($('.note_container li').length == prevNoteCount) { return; }
         // Change play/pause button's text

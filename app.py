@@ -57,7 +57,12 @@ def get_notes():
 	data = json.dumps(notes_pressed.copy())
 	notes_pressed.clear()
 	return data
-	#return json.dumps(['A','B'])
+
+# Route to get pressed notes
+@app.route('/clear_notes')
+def clear_notes():
+	notes_pressed.clear()
+	return 'Success'
 
 # Route to save a new song
 @app.route('/save_song', methods=['POST'])

@@ -107,7 +107,7 @@ $(document).ready(function() {
             console.log(result);
             return result;
         }();
-        
+
         // If title text field is empty
         if (!title.trim()) {
             // Alert user that song was saved
@@ -172,6 +172,13 @@ $(document).ready(function() {
         });
     }
 
+    // Clear list of previously pressed notes
+    function clearPressedNotes() {
+        $.ajax({
+            url: "/clear_notes"
+        });
+    }
+
     
     //~~~~~~~~~~~~~~~
     // FUNCTIONS
@@ -180,6 +187,8 @@ $(document).ready(function() {
 
     // Play song function
     function startSong() {
+        // Clear list of previously pressed notes
+        clearPressedNotes();
         // Return if there are no notes in the song
         if ($('.note_container li').length == prevNoteCount) { return; }
         // Change play/pause button's text
@@ -227,6 +236,8 @@ $(document).ready(function() {
 
     // Play song function
     function startRec() {
+        // Clear list of previously pressed notes
+        clearPressedNotes();
         // Stop playing song
         stopSong();
         // Change record button's text
