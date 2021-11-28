@@ -4,7 +4,10 @@
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
-        
+        <script>
+            // Load external script into html
+            $.getScript("{{ url_for('static', filename='settings.js') }}");
+        </script>
      <title>KEY Homepage</title>
     </head>
     <body>
@@ -20,8 +23,23 @@
             <h2>Your personal music tutor.</h2>
             <!--interactable piano header?-->
         </header>
-        <ul>
-            
+        <ul class="content_container">
+            <li>Use Flats (&#9837;) or Sharps (&#9839;)?
+                <select id="use_sharps">
+                    <option value="false">&#9837;</option>
+                    <option value="true">&#9839;</option>
+                </select>
+            </li>
+            <li>Wait for Note Press
+                <input id="wait_for_note" type="checkbox"></li>
+            <li>Note Update Precision
+                <input id="update_precision" type="number"></li>
+            <li>Time Between Notes (Seconds)
+                <input id="note_interval" type="number"></li>
+            <li>Spacing Notes (Song Display)
+                <input id="display_spacing_notes" type="number"></li>
+            <li>Spacing Notes (New Song)
+                <input id="nsong_spacing_notes" type="number"></li>
         </ul>
     </body>
 </html>

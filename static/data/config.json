@@ -1,5 +1,5 @@
 {
-    "use_sharp": false,
+    "use_sharps": false,
     "note_interval": 1000,
     "update_precision": 6,
     "wait_for_note": false,

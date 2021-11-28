@@ -29,20 +29,6 @@ $(document).ready(function() {
         }).responseText;
         return JSON.parse(config);
     }
-    // Set new JSON information
-    function setConfig(key, value) {
-        // Send song info to main app.py to save
-        $.ajax({
-            url: '/set_config',
-            data: JSON.stringify([key, value]),
-            contentType: 'application/json;charset=UTF-8',
-            type: 'POST',
-            success: function() {
-                // Alert user that song was saved
-                alert('Config Saved!');
-            }
-        });
-    }
 
     // Set song variable by retrieving data
     function getSong(callback, songIndex) {

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, config, render_template, request, url_for
 import mido
 from threading import Thread
 # Song list is stored in csv format
@@ -78,6 +78,7 @@ def clear_notes():
 def set_config():
 	# Get config arguments
 	config_info = json.loads(request.data)
+	print(config_info)
 	config_data[config_info[0]] = config_info[1]
 	# Save config file with new data
 	save_config()
