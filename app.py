@@ -9,10 +9,6 @@ import json
 # Define app
 app = Flask(__name__)
 
-# Define note letters
-NOTES_FLAT = ['A','B&#9837;','B','C','D&#9837;','D','E&#9837;','E','F','F&#9837;','G','A&#9837;']
-NOTES_SHARP = ['A','A&#9839;','B','C','C&#9839;','D','D&#9839;','E','F','F&#9839;','G','G&#9839;']
-
 CONFIG_FILE = 'static/data/config.json'
 SAVED_SONGS_FILE = 'static/data/song_data.csv'
 
@@ -160,10 +156,7 @@ def remove_song_csv(song_index):
 			
 # Function to translate midi key numbers to note letters
 def translate_key(key_num):
-    if (use_sharp):
-        return NOTES_SHARP[key_num % len(NOTES_SHARP)]
-    else:
-        return NOTES_FLAT[key_num % len(NOTES_FLAT)]
+	return config_data['NOTES'][key_num % len(config_data['NOTES'])]
 
 # Function that returns recently played note
 def get_next_note(notes_pressed):
@@ -183,18 +176,6 @@ def get_next_note(notes_pressed):
 if __name__ == '__main__':
 	# Get config information
 	config_data = load_config()
-	# config_data['use_sharp'] = False
-	# config_data['note_interval'] = 1000
-	# config_data['note_check_precision'] = 6
-	# config_data['wait_for_note_press'] = True
-	# config_data['selected_note_color'] = 'mediumseagreen'
-	# config_data['hover_note_color'] = 'gray'
-	# config_data['missed_note_color'] = 'red'
-	# config_data['finish_note_color'] = 'blue'
-	# config_data['invalid_color'] = 'red'
-	# config_data['display_prev_note_count'] = 2
-	# config_data['new_song_prev_note_count'] = 4
-	print(config_data)
 	# Start thread that gets input from midi keyboard
 	p = Thread(target=get_next_note, args=(notes_pressed,))
 	p.start()

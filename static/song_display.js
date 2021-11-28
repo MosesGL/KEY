@@ -64,9 +64,18 @@ $(document).ready(function() {
             success: function(notes) {
                 // Iterate through note values in returned array
                 for (var i=0; i < notes.length; i++) {
-                    // Convert musical symbols to their html equivalents
-                    var note = notes[i].replace('&#9837;','♭');
+                    var note = notes[i];
+                    // Get note index in list of every available note
+                    var noteIndex = config['NOTES'].indexOf(note);
+                    // Reformat note with correct symbols
+                    if (config['use_sharps']) {
+                        note = config['NOTES_SHARP'][noteIndex];
+                    } else {
+                        note = config['NOTES_FLAT'][noteIndex];
+                    }
+                    // Reformat note with correct symbols
                     note = note.replace('&#9839;','♯');
+                    note = note.replace('&#9837;','♭');
                     // Add note to list
                     playedNotes.push(note);
                 }
@@ -74,6 +83,7 @@ $(document).ready(function() {
                 var matchingNote = function() {
                     var goalString= $('#selected').text();
                     for (var i=0;i<playedNotes.length;i++) {
+                        console.log(playedNotes[i]+'!='+goalString);
                         if (playedNotes[i] == goalString) {
                             return true;
                         }
@@ -97,7 +107,7 @@ $(document).ready(function() {
         });
     }
 
-    // Clear list of previously pressed notes
+    // Clear list of previously pressed notes in app.py
     function clearPressedNotes() {
         $.ajax({
             url: "/clear_notes"
@@ -123,6 +133,14 @@ $(document).ready(function() {
             $('.note_container').append(`<li>~</li>`);
         }
         $.map(song['notes'], function(note, i) {
+            // Get note index in list of every available note
+            var noteIndex = config['NOTES'].indexOf(note);
+            // Reformat note with correct symbols
+            if (config['use_sharps']) {
+                note = config['NOTES_SHARP'][noteIndex];
+            } else {
+                note = config['NOTES_FLAT'][noteIndex];
+            }
             // Properly format first note with #selected
             if (i == 0) {
                 // Add note to notes list and #selected class
@@ -139,7 +157,7 @@ $(document).ready(function() {
         // Clear list of previously pressed notes
         clearPressedNotes();
         // Return if there are no notes in the song
-        if ($('.note_container li').length == config['display_spacing_notes']) { return; }
+        if ($('.note_container > li').length == config['display_spacing_notes']) { return; }
         // Change play/pause button's text
         $('#play_btn').text('Pause');
         // If last note in ul is selected
@@ -226,8 +244,8 @@ $(document).ready(function() {
 
         // Select new note (Child indices start at 1, not 0)
         var childIndex = newNoteIndex + 1;
-        $('li:nth-child('+childIndex+')').attr('id','selected');
-        $('li:nth-child('+childIndex+')').css('background-color',config['selected_note_color']);
+        $('.note_container > li:nth-child('+childIndex+')').attr('id','selected');
+        $('.note_container > li:nth-child('+childIndex+')').css('background-color',config['selected_note_color']);
         
         if (forwardNote) {
             // Hide old notes
@@ -305,5 +323,10 @@ $(document).ready(function() {
     // Start song over by reloading page
     $('#reset_btn').on('click', function() {
         location.reload();
+    });
+
+    // Stop playing if inputs are changed
+    $('input').on('change',function() {
+        stopSong();
     });
 });
