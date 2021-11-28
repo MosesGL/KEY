@@ -9,7 +9,8 @@
             var config = undefined;
             // Redirect dropdown menu to settings page
             $(document).ready(function() {
-                $('.drop_btn').on('click',function() {
+                $('#drop_btn').on('click',function() {
+                    console.log('here');
                     location.href = "{{ url_for('settings') }}";
                 });
             });
