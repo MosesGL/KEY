@@ -1,4 +1,4 @@
-from flask import Flask, config, render_template, request, url_for
+from flask import Flask, render_template, request, url_for
 import mido
 from threading import Thread
 # Song list is stored in csv format
