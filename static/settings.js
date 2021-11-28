@@ -1,6 +1,7 @@
 $(document).ready(function() {
-    // Config values
-    var config = getConfig();
+    if (config == undefined) {
+        config = getConfig();
+    }
     setPlaceholders();
 
     // Set new JSON information
@@ -39,23 +40,41 @@ $(document).ready(function() {
 
     // When inputs are updated
     $('#use_sharps').on('change',function() {
+        var value = $(this).prop('selectedIndex')==1;
+        // Update config
+        config['use_sharps'] = value;
         // index of 1 is sharp selection
-        setConfig('use_sharps',($('#use_sharps').prop('selectedIndex')==1));
+        setConfig('use_sharps',value);
     });
     $('#wait_for_note').on('change',function() {
-        setConfig('wait_for_note',$(this).is(':checked'));
+        var value = $(this).is(':checked');
+        // Update config
+        config['wait_for_note'] = value;
+        setConfig('wait_for_note',value);
     });
     $('#update_precision').on('change',function() {
-        setConfig('update_precision',parseInt($('#update_precision').val()));
+        var value = parseInt($(this).val());
+        // Update config
+        config['update_precision'] = value;
+        setConfig('update_precision',value);
     });
     $('#note_interval').on('change',function() {
         // =*1000 converts sec to ms
-        setConfig('note_interval',1000*parseFloat($('#note_interval').val()));
+        var value = parseFloat($(this).val()) * 1000;
+        // Update config
+        config['note_interval'] = value;
+        setConfig('note_interval',value);
     });
     $('#display_spacing_notes').on('change',function() {
-        setConfig('display_spacing_notes',parseInt($('#display_spacing_notes').val()));
+        var value = parseInt($(this).val());
+        // Update config
+        config['display_spacing_notes'] = value;
+        setConfig('display_spacing_notes',value);
     });
     $('#nsong_spacing_notes').on('change',function() {
-        setConfig('nsong_spacing_notes',parseInt($('#nsong_spacing_notes').val()));
+        var value = parseInt($(this).val());
+        // Update config
+        config['nsong_spacing_notes'] = value;
+        setConfig('nsong_spacing_notes',value);
     });
 });

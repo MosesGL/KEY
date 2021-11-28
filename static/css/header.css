@@ -33,30 +33,96 @@ header > h2 {
     font-size: 25px;
 }
 
-nav {
-    background-color:black;
+/* Current page in */
+#current_page {
+    color: white;
+    text-shadow: 1px 2px rgb(87, 87, 87);
 }
 
-nav > a {
-    display: inline-block;
-    padding: 15px;
+/* Navbar container */
+nav {
+    overflow: hidden;
 
-    text-align: center;
-
-    text-decoration: none;
-    font-size: 1em;
     font-weight: 900;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 
-    color:#abc;
+    background-color: black;
 }
 
-nav > a:hover {
-    color:black;
+/* Links inside the navbar */
+nav > a {
+    float: left;
+    padding: 16px 18px;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+
+    color: #abc;
+}
+
+/* When nav links are hovered over */
+nav a:hover, .dropdown:hover > button {
+    cursor: pointer;
+
+    color: black;
     background-color: #abc;
 }
 
-#current_page {
-    color: white;
-    text-shadow: 1px 2px rgb(27, 27, 27);
+/* The dropdown container */
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown > button {
+    padding: 16px 18px;
+
+    text-align: center;
+    font-size: 16px;
+    font-weight: 900;
+    font-family: inherit;
+
+    /* Remove default button css */
+    border: none;
+    outline: none;
+
+    color: #abc;
+    background-color: inherit;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown_content {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    min-width: 160px;
+
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    background-color: #f9f9f9;
+}
+
+/* List items inside the dropdown */
+.dropdown_content > li {
+    display: block;
+    float: none;
+    padding: 10px 12px;
+    
+    text-decoration: none;
+    text-align: left;
+
+    color: black;
+}
+
+/* Dropdown list items on hover */
+.dropdown_content > li:hover {
+    cursor: default;
+
+    background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown_content {
+    display: block;
 }

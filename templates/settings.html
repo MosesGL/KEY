@@ -4,7 +4,10 @@
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='settings.js') }}"></script>
         <script>
+            // Config data (populated later)
+            var config = undefined;
             // Load external script into html
             $.getScript("{{ url_for('static', filename='settings.js') }}");
         </script>
@@ -23,7 +26,7 @@
             <h2>Your personal music tutor.</h2>
             <!--interactable piano header?-->
         </header>
-        <ul class="content_container">
+        <ul class="settings_container">
             <li>Use Flats (&#9837;) or Sharps (&#9839;)?
                 <select id="use_sharps">
                     <option value="false">&#9837;</option>

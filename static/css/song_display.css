@@ -16,12 +16,11 @@ input[type="text"] {
     border-radius: 5px;
 }
 
+/* class of list that contains notes in song */
 .note_container {
-    /*
-    Automatically adjust note container's height to be sum of
+    /* Automatically adjust note container's height to be sum of
      - Top + bottom padding (2 * padding)
-     - Note box size
-     */
+     - Note box size */
     height: var(--note-box-size-total);
 
     background-color: #abc;
@@ -29,7 +28,14 @@ input[type="text"] {
     overflow-y:hidden;
 }
 
+/* the li that store the note in songs */
 .note_container > li {
+    /* Prevent selection of note text */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
     list-style-type: none;
     align-items: flex-start;
 
@@ -43,4 +49,9 @@ input[type="text"] {
     font-weight: 700;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: center;
+}
+
+/* hover over li that store the note in songs (prevents selection cursor)*/
+.note_container > li:hover {
+    cursor: pointer;
 }

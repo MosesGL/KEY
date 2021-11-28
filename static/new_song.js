@@ -9,7 +9,9 @@ $(document).ready(function() {
     // For storing the keys pressed between notes
     var playedNotes = [];
     // Get config information
-    config = getConfig();
+    if (config == undefined) {
+        config = getConfig();
+    }
     // Time (ms) between each note update
     var noteCheckInterval = config['note_interval'] / config['update_precision'];
     // Add empty notes at beginning of song for spacing
