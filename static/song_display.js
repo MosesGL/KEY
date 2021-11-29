@@ -2,7 +2,8 @@
 $(document).ready(function() {
     // Var for counting to see if config['note_interval'] has passed
     var noteCheckCounter;
-    // Interval called upon to control song playback
+    // Vars called upon to control song playback
+    var playingSong = false; // Needed because when button is pressed too quickly, loop is not active
     var songLoop = undefined;
     // For storing the keys pressed between notes
     var playedNotes = [];
@@ -26,7 +27,6 @@ $(document).ready(function() {
     // Get config information
     function getConfig() {
         config = $.ajax({
-            async: false,
             url: "/get_config",
             type: "GET",
             dataType: "json"
@@ -37,7 +37,6 @@ $(document).ready(function() {
     // Set song variable by retrieving data
     function getSong(callback, songIndex) {
         $.ajax({
-            async: false,
             url: "/get_songs",
             type: "GET",
             dataType: "json",
@@ -152,43 +151,44 @@ $(document).ready(function() {
 
     // Play song function
     function startSong() {
-        // Clear list of previously pressed notes
-        clearPressedNotes();
-        // Return if there are no notes in the song
-        if ($('.note_container > li').length == 0) { return; }
-        // Change play/pause button's text
-        $('#play_btn').text('Pause');
-        // If last note in ul is selected
-        if ($('.note_container > li').length-1 == $('#selected').index()) {
-            // Change selected note to first note in ul
-            changeSelectedNote(0);
-        }
-        if (config['wait_for_note']) {
-            // Reset note counter
-            noteCheckCounter = 0;
-            // Move note forward every (noteCheckInterval) ms
-            songLoop = setInterval(function() {
-                // counter == config['update_precision'] (noteInterval has passed)
-                var noteIntervalPassed = noteCheckCounter == config['update_precision'];
-                checkPlayedNotes(moveNoteForward, noteIntervalPassed);
-                // If counter says noteInterval was reached, reset counter
-                if (noteIntervalPassed) { noteCheckCounter = 0; }
-                // Increase counter
-                noteCheckCounter++;
-            }, noteCheckInterval);
-        } else {
-            // After config['note_interval'] ms
-            setTimeout(function() {
-                // Call initial update
-                moveNoteForward();
-                // Move note forward every config['note_interval'] ms
-                songLoop = setInterval(moveNoteForward, config['note_interval']);
-            }, config['note_interval']);
+        // Continue if there are notes in the song
+        if (songLoop == undefined && $('.note_container > li').length != 0) {
+            // Clear list of previously pressed notes
+            clearPressedNotes();
+            // Change play/pause button's text
+            $('#play_btn').text('Pause');
+            // If last note in ul is selected
+            if ($('.note_container > li').length-1 == $('#selected').index()) {
+                // Change selected note to first note in ul
+                changeSelectedNote(0);
+            }
+            if (config['wait_for_note']) {
+                // Reset note counter
+                noteCheckCounter = 0;
+                // Move note forward every (noteCheckInterval) ms
+                songLoop = setInterval(function() {
+                    // counter == config['update_precision'] (noteInterval has passed)
+                    var noteIntervalPassed = noteCheckCounter == config['update_precision'];
+                    checkPlayedNotes(moveNoteForward, noteIntervalPassed);
+                    // If counter says noteInterval was reached, reset counter
+                    if (noteIntervalPassed) { noteCheckCounter = 0; }
+                    // Increase counter
+                    noteCheckCounter++;
+                }, noteCheckInterval);
+            } else {
+                // After config['note_interval'] ms
+                setTimeout(function() {
+                    // Call initial update
+                    moveNoteForward();
+                    // Move note forward every config['note_interval'] ms
+                    songLoop = setInterval(moveNoteForward, config['note_interval']);
+                }, config['note_interval']);
+            }
         }
     }
     // Pause song function
     function stopSong() {
-        // Only stop songLoop if it's already playing
+        // Only stop songLoop if song is already playing
         if (songLoop != undefined) {
             // Change play/pause button's text
             $('#play_btn').text('Play');
@@ -196,6 +196,7 @@ $(document).ready(function() {
             clearInterval(songLoop);
             // Reset songInterval variable
             songLoop = undefined;
+            playingSong = false;
         }
     }
 
@@ -331,7 +332,8 @@ $(document).ready(function() {
     // Play / Pause song
     $('#play_btn').on('click', function() {
         // If song loop is not active
-        if (songLoop == undefined) {
+        if (!playingSong) {
+            playingSong = true;
             startSong();
         } else {
             stopSong();

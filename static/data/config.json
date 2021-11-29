@@ -9,7 +9,7 @@
     "finish_note_color": "blue",
     "invalid_color": "red",
     "display_spacing_notes": 2,
-    "nsong_spacing_notes": 4,
+    "nsong_spacing_notes": 3,
     "NOTES": [
         "A",
         "A+",
