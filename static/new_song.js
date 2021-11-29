@@ -14,8 +14,6 @@ $(document).ready(function() {
     }
     // Time (ms) between each note update
     var noteCheckInterval = config['note_interval'] / config['update_precision'];
-    // Add empty notes at beginning of song for spacing
-    addSpacingNotes();
 
 
     //~~~~~~~~~~~~~~~
@@ -41,7 +39,6 @@ $(document).ready(function() {
             type: "GET",
             dataType: "json",
             success: function(notes) {
-                console.log(notes);
                 // Calls instantiateNotes()
                 callback(notes);
             }
@@ -76,7 +73,6 @@ $(document).ready(function() {
                 var matchingNote = function() {
                     var goalString= $('#selected').text();
                     for (var i=0;i<playedNotes.length;i++) {
-                        console.log(playedNotes[i]+'!='+goalString);
                         if (playedNotes[i] == goalString) {
                             return true;
                         }
@@ -154,7 +150,7 @@ $(document).ready(function() {
             $('#title_input').css('border','2px inset #EBE9ED');
         }
         // If there are no notes in the song
-        if ($('.note_container > li').length == config['nsong_spacing_notes']) {
+        if ($('.note_container > li').length == 0) {
             // Alert user that song was saved
             alert('Please add notes to song.');
             // Highlight border of note container
@@ -169,20 +165,17 @@ $(document).ready(function() {
         var notes = [];
         // Populate note list with recorded li elements
         $('.note_container > li').each(function() {
-            // Avoid spacing notes
-            if ($(this).index() >= config['nsong_spacing_notes']) {// Get note index in list of every available note
-                var note = $(this).text();
-                // Reformat note with correct symbols
-                note = note.replace('♯','&#9839;');
-                note = note.replace('♭','&#9837;');
-                var sharpIndex = config['NOTES_SHARP'].indexOf(note);
-                var flatIndex = config['NOTES_FLAT'].indexOf(note);
-                var noteIndex;
-                if (sharpIndex > flatIndex) { noteIndex=sharpIndex; }
-                else { noteIndex=flatIndex; }
-                note = config['NOTES'][noteIndex];
-                notes.push(note);
-            }
+            var note = $(this).text();
+            // Reformat note with correct symbols
+            note = note.replace('♯','&#9839;');
+            note = note.replace('♭','&#9837;');
+            var sharpIndex = config['NOTES_SHARP'].indexOf(note);
+            var flatIndex = config['NOTES_FLAT'].indexOf(note);
+            var noteIndex;
+            if (sharpIndex > flatIndex) { noteIndex=sharpIndex; }
+            else { noteIndex=flatIndex; }
+            note = config['NOTES'][noteIndex];
+            notes.push(note);
         });
         // Create song dict
         var new_song = {
@@ -223,13 +216,13 @@ $(document).ready(function() {
         // Clear list of previously pressed notes
         clearPressedNotes();
         // Return if there are no notes in the song
-        if ($('.note_container > li').length == config['nsong_spacing_notes']) { return; }
+        if ($('.note_container > li').length == 0) { return; }
         // Change play/pause button's text
         $('#play_btn').text('Pause');
         // If last note in ul is selected
         if ($('.note_container > li').length-1 == $('#selected').index()) {
             // Change selected note to first note in ul
-            changeSelectedNote(config['nsong_spacing_notes']);
+            changeSelectedNote(0);
         }
         if (config['wait_for_note']) {
             // Reset note counter
@@ -303,14 +296,14 @@ $(document).ready(function() {
         stopRec();
     }
 
-    // Add empty notes at beginning of song for spacing
-    function addSpacingNotes() {
-        // ADD SPACING NOTES
-        for (var i=0;i < config['nsong_spacing_notes']; i++) {
-            // Add note to notes list
-            $('.note_container').append('<li>~</li>');
-        }
+    // Update progress bar to show position in song
+    function updateProgressBar() {
+        // Get position percentage in song
+        var position = $('#selected').index()/($('.note_container > li').length-1);
+        // Update values of progress bar
+        $('#song_progress').attr('value',position.toString());
     }
+
     // Add list of notes to html page
     function instantiateNotes(notes) {
         // Reset border of note container if it was previously error-colored
@@ -349,8 +342,6 @@ $(document).ready(function() {
     }
     // Changes selected note to new note (param: index of new selected note)
     function changeSelectedNote(newNoteIndex) {
-        // Return if clicked note's id suggests it is a spacing note
-        if (newNoteIndex < config['nsong_spacing_notes']) { return; }
         // Bool, answers the question: is the new note backwards or forwards in the song list
         var forwardNote;
         // If selected note exists
@@ -382,6 +373,7 @@ $(document).ready(function() {
             // Show previously hidden notes
             showPreviousNotes();
         }
+        updateProgressBar()
     }
 
     // Hide notes that are further than (config['nsong_spacing_notes']) notes behind selected note
@@ -444,13 +436,13 @@ $(document).ready(function() {
         // Stop playing/recording loops
         stopLoops();
         // If there are no notes in the song, return 
-        if ($('.note_container > li').length <= config['nsong_spacing_notes']) { return; }
+        if ($('.note_container > li').length == 0) { return; }
         // Fetch selected element
         var selectedNoteIndex = $('#selected').index();
         // Remove selected note element
         $('#selected').remove();
         // If note position is at beginning of list and note in its place exists
-        if (config['nsong_spacing_notes'] == selectedNoteIndex) {
+        if (selectedNoteIndex == 0) {
             // Make replacement note the new selected note
             changeSelectedNote(selectedNoteIndex);
         }
@@ -460,14 +452,26 @@ $(document).ready(function() {
         }
     });
 
+    // When progress bar is clicked
+    $('#song_progress').on('click',function(event) {
+        // Mouse distance from left edge
+        var mouseX = event.pageX;
+        // Width of screen
+        var screenWidth = $(window).width();
+        // Calculate percentage for distance from left
+        //var temp = mouseX / screenWidth;
+        // Calculate li index around same percentage
+        var index = parseInt($('.note_container > li').length*mouseX/screenWidth);
+        // Change selected note to that index^
+        changeSelectedNote(index);
+    });
+
     // Clear all added notes
     $('#clear_btn').on('click', function() {
         // Stop playing/recording loops
         stopLoops();
         // Clear all note blocks from list
         $('.note_container').empty();
-        // Add spacing notes back
-        addSpacingNotes();
     });
     
     // Start / Stop playing song

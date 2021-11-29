@@ -71,7 +71,7 @@ nav a:hover, .dropdown:hover > button {
 
 /* The dropdown container */
 .dropdown {
-    float: left;
+    float: right;
     overflow: hidden;
 }
 
@@ -96,11 +96,14 @@ nav a:hover, .dropdown:hover > button {
 .dropdown_content {
     display: none;
     position: absolute;
+    right: 0;
     z-index: 1;
     min-width: 160px;
 
+    border-radius: 8px 0 8px 8px;
+
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    background-color: #f9f9f9;
+    background-color: #adadad;
 }
 
 /* List items inside the dropdown */
@@ -109,6 +112,20 @@ nav a:hover, .dropdown:hover > button {
     float: none;
     padding: 10px 12px;
     
+    font-weight: normal;
+    text-decoration: none;
+    text-align: left;
+
+    color: black;
+}
+
+/* Inputs inside the dropdown lis */
+.dropdown_content > li > input {
+    display: block;
+    float: none;
+    padding: 10px 12px;
+    
+    font-weight: normal;
     text-decoration: none;
     text-align: left;
 
@@ -119,7 +136,7 @@ nav a:hover, .dropdown:hover > button {
 .dropdown_content > li:hover {
     cursor: default;
 
-    background-color: #ddd;
+    background-color: #858585;
 }
 
 /* Show the dropdown menu on hover */

@@ -16,6 +16,12 @@ input[type="text"] {
     border-radius: 5px;
 }
 
+#song_progress {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
 /* class of list that contains notes in song */
 .note_container {
     /* Automatically adjust note container's height to be sum of

@@ -14,6 +14,8 @@ $(document).ready(function() {
     var noteCheckInterval = config['note_interval'] / config['update_precision'];
     // Load song information onto web page's elements
     getSong(setupSong, songIndex);
+    // Update progress bar
+    updateProgressBar()
 
 
     //~~~~~~~~~~~~~~~
@@ -35,6 +37,7 @@ $(document).ready(function() {
     // Set song variable by retrieving data
     function getSong(callback, songIndex) {
         $.ajax({
+            async: false,
             url: "/get_songs",
             type: "GET",
             dataType: "json",
@@ -83,7 +86,6 @@ $(document).ready(function() {
                 var matchingNote = function() {
                     var goalString= $('#selected').text();
                     for (var i=0;i<playedNotes.length;i++) {
-                        console.log(playedNotes[i]+'!='+goalString);
                         if (playedNotes[i] == goalString) {
                             return true;
                         }
@@ -127,11 +129,7 @@ $(document).ready(function() {
             $(this).html(song['title']);
         });
         $('.song_desc').html(song['desc']);
-        // Properly format first empty notes
-        for (var i = 0; i < config['display_spacing_notes']; i++)
-        {
-            $('.note_container').append(`<li>~</li>`);
-        }
+        // For every note in song
         $.map(song['notes'], function(note, i) {
             // Get note index in list of every available note
             var noteIndex = config['NOTES'].indexOf(note);
@@ -157,13 +155,13 @@ $(document).ready(function() {
         // Clear list of previously pressed notes
         clearPressedNotes();
         // Return if there are no notes in the song
-        if ($('.note_container > li').length == config['display_spacing_notes']) { return; }
+        if ($('.note_container > li').length == 0) { return; }
         // Change play/pause button's text
         $('#play_btn').text('Pause');
         // If last note in ul is selected
         if ($('.note_container > li').length-1 == $('#selected').index()) {
             // Change selected note to first note in ul
-            changeSelectedNote(config['display_spacing_notes']);
+            changeSelectedNote(0);
         }
         if (config['wait_for_note']) {
             // Reset note counter
@@ -201,6 +199,14 @@ $(document).ready(function() {
         }
     }
 
+    // Update progress bar to show position in song
+    function updateProgressBar() {
+        // Get position percentage in song
+        var position = $('#selected').index()/($('.note_container > li').length-1);
+        // Update values of progress bar
+        $('#song_progress').attr('value',position.toString());
+    }
+
     // Progress forward a note in the song
     function moveNoteForward() {
         // Get index of selected note
@@ -220,8 +226,6 @@ $(document).ready(function() {
     }
     // Changes selected note to new note (param: index of new selected note)
     function changeSelectedNote(newNoteIndex) {
-        // Return if clicked note's id suggests it is a spacing note
-        if (newNoteIndex < config['display_spacing_notes']) { return; }
         // Bool, answers the question: is the new note backwards or forwards in the song list
         var forwardNote;
         // If selected note exists
@@ -254,6 +258,7 @@ $(document).ready(function() {
             // Show previously hidden notes
             showPreviousNotes();
         }
+        updateProgressBar();
     }
 
     // Hide notes that are further than (config['display_spacing_notes']) notes behind selected note
@@ -308,6 +313,19 @@ $(document).ready(function() {
         stopSong();
         // Change selected note to this note
         changeSelectedNote($(this).index());
+    });
+
+    // When progress bar is clicked
+    $('#song_progress').on('click',function(event) {
+        // Mouse distance from left edge
+        var mouseX = event.pageX;
+        // Width of screen
+        var screenWidth = $(window).width();
+        // Calculate li index around same percentage
+        //   index/num-elements = value/progress-bar-max-value
+        var index = parseInt($('.note_container > li').length*mouseX/screenWidth);
+        // Change selected note to that index^
+        changeSelectedNote(index);
     });
 
     // Play / Pause song

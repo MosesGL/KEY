@@ -57,11 +57,12 @@
 
         <h1>Create New Song</h1>
 
-        <form action="{{ url_for('new_song') }}">
-            <p><input type="text" id="title_input" placeholder="Song title" /></p>
-            <p><input type="text" id="desc_input" placeholder="Song description" /></p>
-        </form>
+        <input type="text" id="title_input" placeholder="Song title" />
+        <input type="text" id="desc_input" placeholder="Song description" />
+        
         <ul class="note_container"></ul>
+        <progress id="song_progress" value="0"></progress>
+
         <button id="play_btn">Play</button>
         <button id="record_btn">Record</button>
         <button id="delete_btn">Delete Selected Note</button>
