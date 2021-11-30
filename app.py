@@ -61,8 +61,8 @@ def get_songs():
 def get_notes():
 	data = json.dumps(notes_pressed.copy())
 	notes_pressed.clear()
-	return json.dumps(['A','B'])
-	#return data
+	#return json.dumps(['A','B'])
+	return data
 
 # Route to get pressed notes
 @app.route('/clear_notes')

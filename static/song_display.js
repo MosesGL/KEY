@@ -318,6 +318,7 @@ $(document).ready(function() {
 
     // When progress bar is clicked
     $('#song_progress').on('click',function(event) {
+        stopSong();
         // Mouse distance from left edge
         var mouseX = event.pageX;
         // Width of screen
