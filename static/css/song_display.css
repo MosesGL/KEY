@@ -1,7 +1,5 @@
 html {
-    --note-box-size: 60px;
-    --note-box-padding: 15px;
-    --note-box-size-total: calc(var(--note-box-size) + (2 * var(--note-box-padding)));
+    --note-box-size: 100px;
 }
 
 h1 {
@@ -16,20 +14,24 @@ input[type="text"] {
     border-radius: 5px;
 }
 
-#song_progress {
+/* Song progress bar */
+.song_progress {
     width: 100%;
-    padding: 0;
-    margin: 0;
+    height: 20px;
+    background-color: rgb(230, 228, 221)
+}
+.song_progress_value {
+    width: 0%;
+    height: inherit;
+    background-color: rgb(63, 173, 63)
 }
 
 /* class of list that contains notes in song */
 .note_container {
-    /* Automatically adjust note container's height to be sum of
-     - Top + bottom padding (2 * padding)
-     - Note box size */
-    height: var(--note-box-size-total);
+    height: var(--note-box-size);
 
-    background-color: #abc;
+    box-sizing: border-box;
+    background-color: #4D4CB4;
 
     overflow-y:hidden;
 }
@@ -45,13 +47,18 @@ input[type="text"] {
     list-style-type: none;
     align-items: flex-start;
 
+    box-sizing: border-box;
+
+    text-align: center;
+    vertical-align: middle;
+    line-height: 60px;
+
     display: inline-block;
     width: var(--note-box-size);
     height: var(--note-box-size);
-    padding: var(--note-box-padding);
-    margin: 0;
+    padding: 18px;
 
-    font-size: 2.75em;
+    font-size: 2.5em;
     font-weight: 700;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: center;

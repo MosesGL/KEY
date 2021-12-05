@@ -11,9 +11,9 @@ $(document).ready(function() {
                 // Song link (?songID=i gives song number to song_display)
                 var songLink = '<a href="'+songDisplayURL+'?songIndex='+i+'" class="song_link">'+song.title+'</a>';
                 // Song removal link (?songID=i gives song number to song_display)
-                var removeSongBtn = '<button id="'+i+'" class="remove_song_btn">Delete</button>';
+                var removeSongBtn = '<button id="'+i+'" class="remove_song_btn">Delete Song</button>';
                 // Add links to song list
-                $('.songlist').append('<li>'+songLink+removeSongBtn+'</li>');
+                $('#songlist').append('<li>'+songLink+removeSongBtn+'</li>');
             });
         }
     });

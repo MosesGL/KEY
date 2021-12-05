@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='artwork/key_logo.png') }}" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/song_display.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
@@ -13,11 +14,9 @@
             // Config data (populated later)
             var config = undefined;
             // Redirect dropdown menu to settings page
-            $(document).ready(function() {
-                $('#drop_btn').on('click',function() {
-                    location.href = "{{ url_for('settings') }}";
-                });
-            });
+            function redirectSettings() {
+                location.href = "{{ url_for('settings') }}";
+            }
             // Load external script into html
             $.getScript("{{ url_for('static', filename='settings.js') }}");
             $.getScript("{{ url_for('static', filename='song_display.js') }}");
@@ -27,29 +26,30 @@
     <body>
         <nav>
             <!--Use Flask/Jinja make the url references-->
+            <img class="logo_img" src="{{ url_for('static', filename='artwork/key_logo.png') }}" alt="logo-text">
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('song_selection') }}">Songlist</a>
             <a href="{{ url_for('new_song') }}">New Song</a>
             <a id="current_page" class="song_title"></a>
             <div class="dropdown">
-                <button id="drop_btn">Settings</button>
+                <button onclick="redirectSettings()" id="drop_btn">Settings</button>
                 <ul class="dropdown_content">
-                    <li>Flats (&#9837;) or Sharps (&#9839;)?
-                        <select id="use_sharps">
+                    <li>Use Flats (&#9837;) or Sharps (&#9839;)?
+                        <select id="use_sharps" class="dropdown_input">
                             <option value="false">&#9837;</option>
                             <option value="true">&#9839;</option>
                         </select>
                     </li>
                     <li>Wait for Note Press
-                        <input id="wait_for_note" type="checkbox"></li>
+                        <div class="dropdown_input"><input id="wait_for_note" type="checkbox"></div></li>
                     <li>Note Update Precision
-                        <input id="update_precision" type="number"></li>
+                        <div class="dropdown_input"><input id="update_precision" type="number"></div></li>
                     <li>Time Between Notes (Seconds)
-                        <input id="note_interval" type="number"></li>
+                        <div class="dropdown_input"><input id="note_interval" type="number"></div></li>
                     <li>Spacing Notes (Song Display)
-                        <input id="display_spacing_notes" type="number"></li>
+                        <div class="dropdown_input"><input id="display_spacing_notes" type="number"></div></li>
                     <li>Spacing Notes (New Song)
-                        <input id="nsong_spacing_notes" type="number"></li>
+                        <div class="dropdown_input"><input id="nsong_spacing_notes" type="number"></div></li>
                 </ul>
             </div>
         </nav>
@@ -62,7 +62,9 @@
         <h2 class="song_desc"></h2>
 
         <ul class="note_container"></ul>
-        <progress id="song_progress" value="0"></progress>
+        <div class="song_progress">
+            <div class="song_progress_value"></div>
+        </div>
         
         <button id='play_btn'>Play</button>
         <button id='reset_btn'>Reset</button>

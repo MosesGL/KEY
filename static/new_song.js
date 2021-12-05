@@ -306,8 +306,8 @@ $(document).ready(function() {
     function updateProgressBar() {
         // Get position percentage in song
         var position = $('#selected').index()/($('.note_container > li').length-1);
-        // Update values of progress bar
-        $('#song_progress').attr('value',position.toString());
+        // Update value of progress bar
+        $('.song_progress_value').css('width',(position*100).toString() + "%");
     }
 
     // Add list of notes to html page
@@ -459,7 +459,7 @@ $(document).ready(function() {
     });
 
     // When progress bar is clicked
-    $('#song_progress').on('click',function(event) {
+    $('.song_progress').on('click',function(event) {
         stopLoops();
         // Mouse distance from left edge
         var mouseX = event.pageX;
