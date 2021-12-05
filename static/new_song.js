@@ -9,7 +9,7 @@ $(document).ready(function() {
     var recordingSong = false;
     var recordLoop = undefined;
     // For storing the keys pressed between notes
-    var playedNotes = [];
+    let playedNotes = [];
     // Get config information
     if (config == undefined) {
         config = getConfig();

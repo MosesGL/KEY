@@ -6,7 +6,7 @@ $(document).ready(function() {
     var playingSong = false; // Needed because when button is pressed too quickly, loop is not active
     var songLoop = undefined;
     // For storing the keys pressed between notes
-    var playedNotes = [];
+    let playedNotes = [];
     // Get config information
     if (config == undefined) {
         config = getConfig();
@@ -15,8 +15,6 @@ $(document).ready(function() {
     var noteCheckInterval = config['note_interval'] / config['update_precision'];
     // Load song information onto web page's elements
     getSong(setupSong, songIndex);
-    // Update progress bar
-    updateProgressBar()
 
 
     //~~~~~~~~~~~~~~~
@@ -31,6 +29,9 @@ $(document).ready(function() {
             type: "GET",
             dataType: "json"
         }).responseText;
+        if (config == undefined) {
+            location.reload();
+        }
         return JSON.parse(config);
     }
 
@@ -128,6 +129,9 @@ $(document).ready(function() {
             $(this).html(song['title']);
         });
         $('.song_desc').html(song['desc']);
+        if (song['desc'] == "") {
+            $('.song_desc').hide();
+        }
         // For every note in song
         $.map(song['notes'], function(note, i) {
             // Get note index in list of every available note

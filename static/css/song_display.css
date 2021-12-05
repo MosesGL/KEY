@@ -7,10 +7,25 @@ h1 {
     font-size: 35px;
 }
 
+.new_song_input {
+    box-sizing: border-box;
+    width: 96%;
+    margin:2%;
+    border-radius: 10px;
+    background-color: #3D3D90;
+}
 input[type="text"] {
-    width: 400px;
+    box-sizing: border-box;
+    width: 98%;
+    margin: 6px 1% 6px 1%;
     padding: 10px;
-    margin: 10px;
+    border-radius: 5px;
+}
+textarea {
+    box-sizing: border-box;
+    width: 98%;
+    margin: 6px 1% 6px 1%;
+    padding: 10px;
     border-radius: 5px;
 }
 
