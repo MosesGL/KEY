@@ -1,5 +1,11 @@
 html {
     --note-box-size: 100px;
+
+    /* Prevent selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 h1 {
@@ -36,11 +42,6 @@ textarea {
 
 /* Song progress bar */
 .song_progress {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
     width: 100%;
     height: 20px;
     background-color: rgb(230, 228, 221)
@@ -49,11 +50,6 @@ textarea {
     cursor: pointer;
 }
 .song_progress_value {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
     width: 0%;
     height: inherit;
     background-color: rgb(63, 173, 63)
@@ -71,12 +67,6 @@ textarea {
 
 /* the li that store the note in songs */
 .note_container > li {
-    /* Prevent selection of note text */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
     list-style-type: none;
     align-items: flex-start;
 

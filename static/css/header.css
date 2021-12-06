@@ -45,8 +45,6 @@ header > h2 {
 /* Navbar container */
 nav {
     overflow: hidden;
-    position: sticky;
-    top:0;
 
     font-weight: 900;
     font-family: Verdana, Geneva, Tahoma, sans-serif;

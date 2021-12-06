@@ -85,7 +85,7 @@ $(document).ready(function() {
                 }();
                 // If correct note is in playedNotes
                 if (matchingNote) {
-                    // Calls moveNoteForward()
+                    // Calls shiftNoteForward()
                     callback();
                     // Reset counter
                     noteCheckCounter = 0;
@@ -216,6 +216,7 @@ $(document).ready(function() {
 
     // Play song function
     function startSong() {
+        stopRec();
         // Continue if song is not playing and there are notes in the song
         if (songLoop == undefined && $('.note_container > li').length != 0) {
             // Clear list of previously pressed notes
@@ -234,7 +235,7 @@ $(document).ready(function() {
                 songLoop = setInterval(function() {
                     // counter == config['update_precision'] (note interval has passed)
                     var noteIntervalPassed = noteCheckCounter == config['update_precision'];
-                    checkPlayedNotes(moveNoteForward, noteIntervalPassed);
+                    checkPlayedNotes(shiftNoteForward, noteIntervalPassed);
                     // If counter says note interval was reached, reset counter
                     if (noteIntervalPassed) { noteCheckCounter = 0; }
                     // Increase counter
@@ -244,9 +245,9 @@ $(document).ready(function() {
                 // After config['note_interval'] ms
                 setTimeout(function() {
                     // Call initial update
-                    moveNoteForward();
+                    shiftNoteForward();
                     // Move note forward every config['note_interval'] ms
-                    songLoop = setInterval(moveNoteForward, config['note_interval']);
+                    songLoop = setInterval(shiftNoteForward, config['note_interval']);
                 }, config['note_interval']);
             }
         }
@@ -262,6 +263,8 @@ $(document).ready(function() {
             // Reset songInterval variable
             songLoop = undefined;
             playingSong = false;
+            // Reset color of current note
+            $('#selected').css('background-color',config['selected_note_color'])
         }
     }
 
@@ -334,20 +337,61 @@ $(document).ready(function() {
         changeSelectedNote($('.note_container > li:last-child').index());
     }
 
-    // Progress forward a note in the song
-    function moveNoteForward() {
+    // Delete selected note
+    function deleteNote() {
+        // Stop playing/recording loops
+        stopLoops();
+        // If there are no notes in the song, return 
+        if ($('.note_container > li').length == 0) { return; }
+        // Fetch selected element
+        var selectedNoteIndex = $('#selected').index();
+        // Remove selected note element
+        $('#selected').remove();
+        // If note position is at beginning of list and note in its place exists
+        if (selectedNoteIndex == 0) {
+            // Make replacement note the new selected note
+            changeSelectedNote(selectedNoteIndex);
+        }
+        else {
+            // Make previous note the new selected note
+            changeSelectedNote(selectedNoteIndex - 1);
+        }
+    }
+
+    // Shift forward a note in the song
+    //   -- isEvent => true if user pressed a key to move forward a note
+    function shiftNoteForward(isEvent = false) {
         // Get index of selected note
         var selectedNoteIndex = $('#selected').index();
-        // If on last note of song
-        //  - ~~~.length-1 = final note's index
-        //  - selectedNoteIndex = index of selected note
+        // If on last note index of song
         if ($('.note_container > li').length-1 == selectedNoteIndex) {
-            stopSong();
-            $('#selected').css('background-color',config['finish_note_color']);
+            // If user requested to go forward a note
+            if (isEvent) {
+                changeSelectedNote(0);
+            }
+            // If song is playing, song end has been reached
+            else {
+                stopSong();
+                $('#selected').css('background-color',config['finish_note_color']);
+            }
             return;
         }
         // Change selected note to next note in ul
         changeSelectedNote(selectedNoteIndex + 1);
+    }
+    // Shift backward a note in the song
+    function shiftNoteBack() {
+        // Get index of selected note
+        var selectedNoteIndex = $('#selected').index();
+        // If on first note of song
+        if (selectedNoteIndex == 0) {
+            stopSong();
+            // Select last note in song
+            changeSelectedNote($('.note_container > li').length-1);
+            return;
+        }
+        // Change selected note to next note in ul
+        changeSelectedNote(selectedNoteIndex - 1);
     }
     // Changes selected note to new note (param: index of new selected note)
     function changeSelectedNote(newNoteIndex) {
@@ -442,23 +486,7 @@ $(document).ready(function() {
 
     // Delete selected note
     $('#delete_btn').on('click', function() {
-        // Stop playing/recording loops
-        stopLoops();
-        // If there are no notes in the song, return 
-        if ($('.note_container > li').length == 0) { return; }
-        // Fetch selected element
-        var selectedNoteIndex = $('#selected').index();
-        // Remove selected note element
-        $('#selected').remove();
-        // If note position is at beginning of list and note in its place exists
-        if (selectedNoteIndex == 0) {
-            // Make replacement note the new selected note
-            changeSelectedNote(selectedNoteIndex);
-        }
-        else {
-            // Make previous note the new selected note
-            changeSelectedNote(selectedNoteIndex - 1);
-        }
+        deleteNote();
     });
 
     // When progress bar is clicked
@@ -492,7 +520,7 @@ $(document).ready(function() {
         $('.note_container').empty();
     });
     
-    // Start / Stop playing song
+    // Play / Pause song
     $('#play_btn').on('click', function() {
         // If song loop is not active
         if (!playingSong) {
@@ -522,5 +550,46 @@ $(document).ready(function() {
     // Stop loops if inputs are changed
     $('input').on('change',function() {
         stopLoops();
+    });
+
+    document.addEventListener('keyup', event => {
+        // Play song on space key press
+        if (event.code === 'Space') {
+            // If song loop is not active
+            if (!playingSong) {
+                playingSong = true;
+                startSong();
+            } else {
+                stopSong();
+            }
+        }
+        // If 'ArrowRight' key is pressed, go forward a note
+        else if (event.code === 'ArrowRight') {
+            stopLoops();
+            shiftNoteForward();
+        }
+        // If 'ArrowLeft' key is pressed, go back a note
+        else if (event.code === 'ArrowLeft') {
+            stopLoops();
+            shiftNoteBack();
+        }
+        // If 'R' key is pressed record song
+        else if (event.code === 'KeyR') {
+            // If not currently recording
+            if (!recordingSong) {
+                recordingSong = true;
+                startRec();
+            } else {
+                stopRec();
+            }
+        }
+        // If 'Backspace' key is pressed, delete selected note
+        else if (event.code === 'Backspace') {
+            deleteNote();
+        }
+        // If 'Return' key is pressed go to beginning of song
+        else if (event.code === 'Enter') {
+            changeSelectedNote(0);
+        }
     });
 });

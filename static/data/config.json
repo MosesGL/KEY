@@ -2,7 +2,7 @@
     "use_sharps": false,
     "note_interval": 1000,
     "update_precision": 6,
-    "wait_for_note": true,
+    "wait_for_note": false,
     "selected_note_color": "mediumseagreen",
     "hover_note_color": "#3D3D90",
     "missed_note_color": "hsl(0,40%,50%)",
