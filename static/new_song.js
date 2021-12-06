@@ -566,7 +566,7 @@ $(document).ready(function() {
         // If 'ArrowRight' key is pressed, go forward a note
         else if (event.code === 'ArrowRight') {
             stopLoops();
-            shiftNoteForward();
+            shiftNoteForward(true);
         }
         // If 'ArrowLeft' key is pressed, go back a note
         else if (event.code === 'ArrowLeft') {

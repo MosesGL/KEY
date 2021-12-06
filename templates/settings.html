@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <link rel="shortcut icon" href="{{ url_for('static', filename='artwork/key_logo.png') }}" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='library/jquery-3.6.0.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='settings.js') }}"></script>
         <script>
@@ -28,23 +29,43 @@
             <h2>Your personal music tutor.</h2>
             <!--interactable piano header?-->
         </header>
+
+        <h1>Settings</h1>
+
         <ul class="settings_container">
             <li>Use Flats (&#9837;) or Sharps (&#9839;)?
-                <select id="use_sharps">
-                    <option value="false">&#9837;</option>
-                    <option value="true">&#9839;</option>
-                </select>
+                <div class="settings_input">
+                    <select id="use_sharps">
+                        <option value="false">&#9837;</option>
+                        <option value="true">&#9839;</option>
+                    </select>
+                </div>
             </li>
             <li>Wait for Note Press
-                <input id="wait_for_note" type="checkbox"></li>
+                <div class="settings_input">
+                    <input id="wait_for_note" type="checkbox">
+                </div>
+            </li>
             <li>Note Update Precision
-                <input id="update_precision" type="number"></li>
+                <div class="settings_input">
+                    <input id="update_precision" type="number">
+                </div>
+            </li>
             <li>Time Between Notes (Seconds)
-                <input id="note_interval" type="number"></li>
+                <div class="settings_input">
+                    <input id="note_interval" type="number">
+                </div>
+            </li>
             <li>Spacing Notes (Song Display)
-                <input id="display_spacing_notes" type="number"></li>
+                <div class="settings_input">
+                    <input id="display_spacing_notes" type="number">
+                </div>
+            </li>
             <li>Spacing Notes (New Song)
-                <input id="nsong_spacing_notes" type="number"></li>
+                <div class="settings_input">
+                    <input id="nsong_spacing_notes" type="number">
+                </div>
+            </li>
         </ul>
     </body>
 </html>
