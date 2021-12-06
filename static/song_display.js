@@ -373,6 +373,8 @@ $(document).ready(function() {
         if (sliding) {
             // Mouse distance from left edge
             mouseX = event.pageX;
+            if (mouseX < 0) { mouseX = 0; }
+            else if (mouseX > $(window).width()) { mouseX = $(window).width()-1; }
             // Width of screen
             var screenWidth = $(window).width();
             // Calculate li index around same percentage

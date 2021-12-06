@@ -55,7 +55,7 @@ def get_config():
 @app.route('/get_songs', methods=['GET'])
 def get_songs():
 	# List sorting
-	if (config_data['sort_songs']):
+	if (config_data['sort_songs'] == True):
 		return json.dumps(sorted(song_list, key = lambda song: song['title']))
 	else:
 		return json.dumps(song_list)
@@ -79,7 +79,6 @@ def clear_notes():
 def set_config():
 	# Get config arguments
 	config_info = json.loads(request.data)
-	print(config_info)
 	config_data[config_info[0]] = config_info[1]
 	# Save config file with new data
 	save_config()
