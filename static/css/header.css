@@ -22,12 +22,14 @@ header > h1 {
     padding: 15px;
     font-size: 45px;
     background-color: transparent;
+    box-shadow: none;
 }
 
 header > h2 {
     padding: 15px;
     font-size: 25px;
     background-color: transparent;
+    box-shadow: none;
 }
 
 /* Current page in */
@@ -60,9 +62,9 @@ nav > a {
     text-align: center;
     text-decoration: none;
     font-size: 16px;
-    border-radius: 0 0 10px 10px;
 
     color: #abc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.634);
 }
 
 /* When nav links are hovered over */
@@ -169,6 +171,7 @@ h1 {
     border-radius: 10px;
     color: white;
     background-color: #4D4CB4;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 1);
 }
 h2 {
     margin: 15px;
@@ -178,6 +181,7 @@ h2 {
     border-radius: 10px;
     color: rgb(230, 230, 230);
     background-color:#3D3D90;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 1);
 }
 
 .default_list > li {
@@ -190,6 +194,7 @@ h2 {
 
     border-radius: 10px;
     background-color: #4D4CB4;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 1);
 }
 .default_list > li:hover {
     background-color: #3D3D90;

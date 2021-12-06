@@ -5,6 +5,9 @@ $(document).ready(function() {
     // Vars called upon to control song playback
     var playingSong = false; // Needed because when button is pressed too quickly, loop is not active
     var songLoop = undefined;
+    // Variables for song slider
+    var mouseX = 0;
+    var sliding = false;
     // For storing the keys pressed between notes
     let playedNotes = [];
     // Get config information
@@ -321,17 +324,26 @@ $(document).ready(function() {
     });
 
     // When progress bar is clicked
-    $('.song_progress').on('click',function(event) {
+    $('.song_progress').on('mousedown',function(event) {
         stopSong();
-        // Mouse distance from left edge
-        var mouseX = event.pageX;
-        // Width of screen
-        var screenWidth = $(window).width();
-        // Calculate li index around same percentage
-        //   index/num-elements = value/progress-bar-max-value
-        var index = parseInt($('.note_container > li').length*mouseX/screenWidth);
-        // Change selected note to that index^
-        changeSelectedNote(index);
+        sliding = true;
+    });
+    // Update mouse position
+    $(document).mousemove(function(event) {
+        if (sliding) {
+            // Mouse distance from left edge
+            mouseX = event.pageX;
+            // Width of screen
+            var screenWidth = $(window).width();
+            // Calculate li index around same percentage
+            //   index/num-elements = value/progress-bar-max-value
+            var index = parseInt($('.note_container > li').length*mouseX/screenWidth);
+            // Change selected note to that index^
+            changeSelectedNote(index);
+        }
+    });
+    $(document).on('mouseup', function() {
+        sliding = false;
     });
 
     // Play / Pause song

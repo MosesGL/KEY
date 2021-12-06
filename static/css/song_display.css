@@ -12,6 +12,7 @@ h1 {
     width: 96%;
     margin:2%;
     border-radius: 10px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     background-color: #3D3D90;
 }
 input[type="text"] {
@@ -20,6 +21,8 @@ input[type="text"] {
     margin: 6px 1% 6px 1%;
     padding: 10px;
     border-radius: 5px;
+    border: none;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.534);
 }
 textarea {
     box-sizing: border-box;
@@ -27,15 +30,30 @@ textarea {
     margin: 6px 1% 6px 1%;
     padding: 10px;
     border-radius: 5px;
+    border: none;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.534);
 }
 
 /* Song progress bar */
 .song_progress {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
     width: 100%;
     height: 20px;
     background-color: rgb(230, 228, 221)
 }
+.song_progress:hover {
+    cursor: pointer;
+}
 .song_progress_value {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
     width: 0%;
     height: inherit;
     background-color: rgb(63, 173, 63)
@@ -82,4 +100,23 @@ textarea {
 /* hover over li that store the note in songs (prevents selection cursor)*/
 .note_container > li:hover {
     cursor: pointer;
+}
+
+.button_controls {
+    float: left;
+    height: 80%;
+    width: 19%;
+    margin: 5px;
+    border-style: none;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.534);
+    background-color: hsl(0, 40%, 50%);
+
+    font-weight:bold;
+    font-size: 1em;
+}
+
+.button_controls:hover {
+    cursor: pointer;
+    background-color: hsl(0, 80%, 50%);
 }
