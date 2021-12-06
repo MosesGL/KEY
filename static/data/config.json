@@ -1,4 +1,5 @@
 {
+    "sort_songs": false,
     "use_sharps": false,
     "note_interval": 1000,
     "update_precision": 6,

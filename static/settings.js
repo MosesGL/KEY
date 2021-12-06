@@ -36,6 +36,7 @@ $(document).ready(function() {
         $('#note_interval').attr('value',config['note_interval']/1000);
         $('#display_spacing_notes').attr('value',config['display_spacing_notes']);
         $('#nsong_spacing_notes').attr('value',config['nsong_spacing_notes']);
+        $('#sort_songs').prop('checked', config['sort_songs']);
     }
 
     // When inputs are updated
@@ -51,6 +52,12 @@ $(document).ready(function() {
         // Update config
         config['wait_for_note'] = value;
         setConfig('wait_for_note',value);
+    });
+    $('#sort_songs').on('change',function() {
+        var value = $(this).is(':checked');
+        // Update config
+        config['sort_songs'] = value;
+        setConfig('sort_songs',value);
     });
     $('#update_precision').on('change',function() {
         var value = parseInt($(this).val());

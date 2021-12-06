@@ -54,7 +54,11 @@ def get_config():
 # Route to get song data
 @app.route('/get_songs', methods=['GET'])
 def get_songs():
-	return json.dumps(song_list)
+	# List sorting
+	if (config_data['sort_songs']):
+		return json.dumps(sorted(song_list, key = lambda song: song['title']))
+	else:
+		return json.dumps(song_list)
 
 # Route to get pressed notes
 @app.route('/get_notes', methods=['GET'])
